@@ -4,6 +4,7 @@ Cube-Simulator
 An NxNxN Cube Twisty Puzzle Application
 
 Controls:
+
 h Rotate active top layer clockwise
 f Rotate active top layer counter-clockwise
 
@@ -41,3 +42,15 @@ tab Scramble Cube
 <number> Create a new cube twisty puzzle with the dimensions <number>x<number>x<number>
 l-shift - Move active layer out by 1
 r-shift - Move active layer in by 1
+
+Dependencies:
+OpenGL
+GLU
+SFML
+
+Libraries Linked Against:
+GL
+GLU
+sfml-graphics
+sfml-system
+sfml-window
