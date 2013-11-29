@@ -1,10 +1,9 @@
 Cube-Simulator
 ==============
 
-An NxNxN Cube Twisty Puzzle Application
+An NxNxN Cube Twisty Puzzle Simulator
 
 Controls:
-
 h Rotate active top layer clockwise
 f Rotate active top layer counter-clockwise
 
@@ -44,8 +43,6 @@ l-shift - Move active layer out by 1
 r-shift - Move active layer in by 1
 
 Dependencies:
-OpenGL
-GLU
 SFML
 
 Libraries Linked Against:
