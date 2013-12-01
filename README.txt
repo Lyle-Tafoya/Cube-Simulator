@@ -38,7 +38,7 @@ arrows Rotate cube
 esc Exit application
 tab Scramble Cube
 
-<number> Create a new cube twisty puzzle with the dimensions <number>x<number>x<number>
+<number> Create a new cube twisty puzzle with the dimensions NxNxN
 l-shift - Move active layer out by 1
 r-shift - Move active layer in by 1
 
