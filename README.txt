@@ -7,11 +7,11 @@ Controls:
 h Rotate active top layer clockwise
 f Rotate active top layer counter-clockwise
 
-i Rotate active left layer clockwise
-k Rotate active left layer counter-clockwise
+i Rotate active right layer clockwise
+k Rotate active right layer counter-clockwise
 
-d Rotate active right layer clockwise
-e Rotate active right layer counter-clockwise
+d Rotate active left layer clockwise
+e Rotate active left layer counter-clockwise
 
 s Rotate active bottom layer clockwise
 l Rotate active bottom layer counter-clockwise
@@ -35,6 +35,7 @@ y Rotate entire cube counter-clockwise on x-axis
 - Zoom Out
 
 arrows Rotate cube
+Backspace Reset Camera
 esc Exit application
 tab Scramble Cube
 
