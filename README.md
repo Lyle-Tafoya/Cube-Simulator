@@ -46,7 +46,7 @@ r-shift - Move active layer in by 1
 
 #### Dependencies:
 
-SFML
+SFML 2.1
 
 #### Libraries Linked Against:
 
