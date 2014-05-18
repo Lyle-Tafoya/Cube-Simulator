@@ -3,6 +3,7 @@ Cube-Simulator
 
 An NxNxN Cube Twisty Puzzle Simulator
 
+
 Controls:
 h Rotate active top layer clockwise
 f Rotate active top layer counter-clockwise
