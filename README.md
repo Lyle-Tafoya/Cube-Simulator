@@ -3,7 +3,6 @@ Cube-Simulator
 
 An NxNxN Cube Twisty Puzzle Simulator
 ![ScreenShot](https://raw.githubusercontent.com/Lyle-Tafoya/Cube-Simulator/master/screenshot.jpg)
-https://raw.githubusercontent.com/Lyle-Tafoya/Cube-Simulator/561767f1026afe89b67871e2329d933733d59510/screenshot.jpg
 
 Controls:
 h Rotate active top layer clockwise  
@@ -34,7 +33,7 @@ b Rotate entire cube clockwise on x-axis
 y Rotate entire cube counter-clockwise on x-axis
 
 = Zoom in
-- Zoom Out
+\- Zoom Out
 
 arrows Rotate camera around cube  
 Backspace Reset Camera  
