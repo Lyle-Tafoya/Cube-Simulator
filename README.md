@@ -2,7 +2,7 @@ Cube-Simulator
 ==============
 
 An NxNxN Cube Twisty Puzzle Simulator
-
+![ScreenShot](https://raw.githubusercontent.com/Lyle-Tafoya/Cube-Simulator/master/screenshot.jpg)
 
 Controls:
 h Rotate active top layer clockwise
