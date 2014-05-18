@@ -1,10 +1,10 @@
-Cube-Simulator
-==============
+## Cube-Simulator
 
 An NxNxN Cube Twisty Puzzle Simulator
 ![ScreenShot](https://raw.githubusercontent.com/Lyle-Tafoya/Cube-Simulator/master/screenshot.jpg)
 
-Controls:
+#### Controls:
+
 h Rotate active top layer clockwise  
 f Rotate active top layer counter-clockwise
 
@@ -32,7 +32,7 @@ q Rotate entire cube counter-clockwise on z-axis
 b Rotate entire cube clockwise on x-axis  
 y Rotate entire cube counter-clockwise on x-axis
 
-= Zoom in
+= Zoom in  
 \- Zoom Out
 
 arrows Rotate camera around cube  
@@ -44,10 +44,12 @@ tab Scramble Cube
 l-shift - Move active layer out by 1  
 r-shift - Move active layer in by 1
 
-Dependencies:  
+#### Dependencies:
+
 SFML
 
-Libraries Linked Against:  
+#### Libraries Linked Against:
+
 GL  
 GLU  
 sfml-graphics  
