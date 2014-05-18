@@ -11,7 +11,7 @@ void createCube(unsigned int cubiesPerEdge = 3)
 {
   delete pCube;
   pCube = new cube(cubiesPerEdge);
-  viewPort::resizeWindow(pWindow->getSize().x, pWindow->getSize().y);
+  viewPort::ResizeWindow(pWindow->getSize().x, pWindow->getSize().y);
 }
 
 // The RGB values for the 6 colors we need
@@ -25,19 +25,6 @@ const float colors[6][3] =
   {0.00f, 0.00f, 1.00f}  // Blue
 };
 
-/*
-// black instead of yellow
-const float colors[6][3] =
-{
-  {1.00f, 1.00f, 1.00f}, // White
-  {0.00f, 0.00f, 0.00f}, // Yellow
-  {1.00f, 0.00f, 0.00f}, // Red
-  {1.00f, 0.65f, 0.00f}, // Orange
-  {0.00f, 1.00f, 0.00f}, // Green
-  {0.00f, 0.00f, 1.00f}  // Blue
-};
-*/
-
 // Draw a rectangle
 inline void drawRect(float height, float aspectRatio = 1.f)
 {
@@ -50,7 +37,7 @@ inline void drawRect(float height, float aspectRatio = 1.f)
 }
 
 // Display the cube to the screen
-void cube::display()
+void cube::Display()
 {
   // Update the rotation animation
   static sf::Clock clock;
@@ -78,12 +65,13 @@ void cube::display()
           // Deal with the rotation of stickers
           if(rotate_axis == AXIS_UNDEFINED)
               stickers[sideNum][x][y]->rotating = false;
+
+          // Rotate stickers if necessary
           if(stickers[sideNum][x][y]->rotating == true)
           {
-            // A negative axis indicates a counter clockwise twist
-
-        	switch(rotate_axis)
+            switch(rotate_axis)
             {
+              // Counter-Clockwise Twists
               case -AXIS_X:
                 glRotatef(rotate_angle-90.f, 1.f, 0.f, 0.f);
                 break;
@@ -94,6 +82,7 @@ void cube::display()
                 glRotatef(rotate_angle-90.f, 0.f, 0.f, 1.f);
                 break;
 
+              // Clockwise Twists
               case AXIS_X:
                 glRotatef(90.f-rotate_angle, 1.f, 0.f, 0.f);
                 break;
@@ -143,7 +132,7 @@ void cube::display()
   // If we have any twists waiting to be executed, do so now
   if(rotate_axis == AXIS_UNDEFINED && !twist_queue.empty())
   {
-    twistLayer(twist_queue.front().layer, twist_queue.front().axis);
+    Twist(twist_queue.front().layer, twist_queue.front().axis);
     twist_queue.pop();
   }
 }
@@ -159,13 +148,13 @@ viewPort::viewPort(unsigned int width, unsigned int height)
   glEnable(GL_DEPTH_TEST);
   glDepthMask(GL_TRUE);
 
-  resizeWindow(width, height);
+  ResizeWindow(width, height);
 
   glLoadIdentity();
 }
 
 // Adjust the projection matrix to a new width/height
-void viewPort::resizeWindow(unsigned int width, unsigned int height)
+void viewPort::ResizeWindow(unsigned int width, unsigned int height)
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();

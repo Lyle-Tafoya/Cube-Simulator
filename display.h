@@ -11,9 +11,9 @@ class viewPort
 
 public:
   viewPort(unsigned int width, unsigned int height);
-  void update();
+  void Update();
 
-  static void resizeWindow(unsigned int width, unsigned int height);
+  static void ResizeWindow(unsigned int width, unsigned int height);
 };
 
 #endif

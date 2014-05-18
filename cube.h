@@ -21,8 +21,10 @@
 #define AXIS_Y            2
 #define AXIS_Z            3
 
+// A NxNxN cube twisty puzzle
 class cube
 {
+  // Information about a twist in the queue
   struct twistInfo
   {
     unsigned int layer;
@@ -31,6 +33,7 @@ class cube
   };
   std::queue<twistInfo> twist_queue;
 
+  // A single sticker
   class sticker
   {
     unsigned char color;
@@ -42,18 +45,17 @@ class cube
     friend class cube;
   };
 
-  sticker ***stickers[6];
-  short rotate_axis;
-  float rotate_angle;
-
+  sticker ***stickers[6]; // A 3D array of stickers
+  short rotate_axis;      // The axis we are rotating around
+  float rotate_angle;     // The current angle of rotation (0-90)
 
 public:
   cube(unsigned int cubies_per_edge = 3);
   ~cube();
 
-  void display();
-  void twistLayer(unsigned int layer, short axis);
-  void scramble(unsigned int num_twists = 20);
+  void Display();
+  void Twist(unsigned int layer, short axis);
+  void Scramble(unsigned int num_twists = 20);
 
   const unsigned int CUBIES_PER_EDGE;
 

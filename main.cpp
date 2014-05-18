@@ -1,15 +1,10 @@
-#include "display.h"
-
-// input.cpp
-extern void handleInput();
-
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
 
 #include "display.h"
 
 // input.cpp
-extern void handleInput();
+extern void HandleInput();
 
 // Global Variables
 cube *pCube;
@@ -27,19 +22,19 @@ int main()
   // Main Loop
   while(pWindow->isOpen())
   {
-    handleInput();
+    HandleInput();
 
 
     // Clear and draw
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
 
-      pCamera->update();
-      pCube->display();
+      pCamera->Update();
+      pCube->Display();
       pWindow->display();
 
     glPopMatrix();
   }
 
-  return EXIT_SUCCESS;
+  return 0;
 }

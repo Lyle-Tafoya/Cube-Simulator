@@ -50,14 +50,14 @@ cube::~cube()
 }
 
 // Scramble the cube
-void cube::scramble(unsigned int numTwists)
+void cube::Scramble(unsigned int numTwists)
 {
   for(unsigned int i = 0; i < numTwists; i++)
-    twistLayer(randNum(0, CUBIES_PER_EDGE-1), randNum(AXIS_X, AXIS_Z));
+    Twist(randNum(0, CUBIES_PER_EDGE-1), randNum(AXIS_X, AXIS_Z));
 }
 
 // Twist a single layer of the rubik's cube along a given axis
-void cube::twistLayer(unsigned int layer, short axis)
+void cube::Twist(unsigned int layer, short axis)
 {
   // We can't twist a layer that doesn't exist
   if(layer >= CUBIES_PER_EDGE)
@@ -70,6 +70,7 @@ void cube::twistLayer(unsigned int layer, short axis)
     return;
   }
 
+  // TODO Replace this with a single temporary sticker to save memory
   // Create a temporary array of stickers to work with
   sticker ***tmp[6];
   for(int sideNum = 0; sideNum < 6; sideNum++)
