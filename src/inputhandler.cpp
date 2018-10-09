@@ -38,7 +38,6 @@ void InputHandler::update(float deltaTime)
   {
     yAngle += elapsedTime / 3000.f * 360.f;
   }
-  viewport->rotateCamera(xAngle, yAngle, 0.f);
 
   // Zoom in and out
   float zoom = 0;
@@ -50,11 +49,8 @@ void InputHandler::update(float deltaTime)
   {
     zoom -= elapsedTime / 3000.f * cube->getSize() * 100.f;
   }
-  viewport->zoomCamera(zoom);
 
-  glTranslatef(0.f, 0.f, zoom);
-  glRotatef(xAngle, 1.f, 0.f, 0.f);
-  glRotatef(yAngle, 0.f, 1.f, 0.f);
+  viewport->adjustCamera(xAngle, yAngle, zoom);
 }
 
 void InputHandler::keyboardCallback(GLFWwindow *, int key, int, int action, int)
@@ -169,6 +165,10 @@ void InputHandler::keyboardCallback(GLFWwindow *, int key, int, int action, int)
       {
         ++sliceMod;
       }
+      break;
+
+    case GLFW_KEY_BACKSPACE:
+      viewport->resetCamera();
       break;
 
       // Choose a new cube size

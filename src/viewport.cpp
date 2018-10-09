@@ -26,6 +26,11 @@ Viewport::~Viewport()
   glfwTerminate();
 }
 
+void Viewport::adjustCamera(float xAngle, float yAngle, float zoom)
+{
+  setCamera(this->xAngle+xAngle, this->yAngle+yAngle, this->zoom+zoom);
+}
+
 // Adjust the projection matrix to a new width/height
 void Viewport::resizeWindow(int width, int height)
 {
@@ -33,18 +38,23 @@ void Viewport::resizeWindow(int width, int height)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(45.f, static_cast<float>(width) / static_cast<float>(height), 1.f, 10000.f);
+  setCamera(xAngle, yAngle, zoom);
+}
+
+void Viewport::resetCamera()
+{
+  setCamera(35.f, -35.f, -0.f);
+}
+
+void Viewport::setCamera(float xAngle, float yAngle, float zoom)
+{
+  this->xAngle = xAngle;
+  this->yAngle = yAngle;
+  this->zoom = zoom;
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   gluLookAt(0.f, 0.f, 500.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f);
-}
-
-void Viewport::rotateCamera(float xAxis, float yAxis, float)
-{
-  xAngle += xAxis;
-  yAngle += yAxis;
-}
-
-void Viewport::zoomCamera(float zoom)
-{
-  this->zoom += zoom;
+  glTranslatef(0.f, 0.f, zoom);
+  glRotatef(xAngle, 1.f, 0.f, 0.f);
+  glRotatef(yAngle, 0.f, 1.f, 0.f);
 }

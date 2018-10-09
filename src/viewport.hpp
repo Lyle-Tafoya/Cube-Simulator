@@ -14,9 +14,10 @@ public:
   Viewport(int width, int height);
   ~Viewport();
   inline GLFWwindow *getWindow() { return window; }
+  void adjustCamera(float xAngle, float yAngle, float zoom);
+  void resetCamera();
   void resizeWindow(int width, int height);
-  void rotateCamera(float x, float y, float);
-  void zoomCamera(float zoom);
+  void setCamera(float xAngle, float yAngle, float zoom);
 };
 
 #endif
