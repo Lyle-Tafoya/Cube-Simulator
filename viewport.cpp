@@ -14,7 +14,7 @@ Viewport::Viewport(int width, int height)
   glfwSwapInterval(1);
 
   // Setup OpenGL
-  glClearColor(0.6f, 0.6f, 0.6f, 0.6f);
+  glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
   glClearDepth(1.f);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
