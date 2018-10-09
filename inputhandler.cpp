@@ -7,15 +7,15 @@ GLFWwindow *InputHandler::glfwWindow = nullptr;
 Viewport *InputHandler::viewport = nullptr;
 size_t InputHandler::sliceMod = 0;
 
-void InputHandler::Init(Cube *cube, Viewport *viewport)
+void InputHandler::init(Cube *cube, Viewport *viewport)
 {
   InputHandler::viewport = viewport;
-  glfwWindow = viewport->GetWindow();
+  glfwWindow = viewport->getWindow();
   InputHandler::cube = cube;
-  glfwSetKeyCallback(viewport->GetWindow(),KeyCallback);
+  glfwSetKeyCallback(glfwWindow, keyboardCallback);
 }
 
-void InputHandler::Update(float deltaTime)
+void InputHandler::update(float deltaTime)
 {
   float elapsedTime = deltaTime*1000.f;
 
@@ -38,154 +38,169 @@ void InputHandler::Update(float deltaTime)
   {
     yAngle += elapsedTime / 3000.f * 360.f;
   }
-  viewport->RotateCamera(xAngle, yAngle, 0.f);
+  viewport->rotateCamera(xAngle, yAngle, 0.f);
 
   // Zoom in and out
   float zoom = 0;
   if(glfwGetKey(glfwWindow, GLFW_KEY_EQUAL) == GLFW_PRESS)
-    zoom += elapsedTime / 3000.f * cube->GetSize() * 100.f;
+  {
+    zoom += elapsedTime / 3000.f * cube->getSize() * 100.f;
+  }
   if(glfwGetKey(glfwWindow, GLFW_KEY_MINUS) == GLFW_PRESS)
-    zoom -= elapsedTime / 3000.f * cube->GetSize() * 100.f;
-  viewport->ZoomCamera(zoom);
+  {
+    zoom -= elapsedTime / 3000.f * cube->getSize() * 100.f;
+  }
+  viewport->zoomCamera(zoom);
 
   glTranslatef(0.f, 0.f, zoom);
   glRotatef(xAngle, 1.f, 0.f, 0.f);
   glRotatef(yAngle, 0.f, 1.f, 0.f);
 }
 
-// Get all input not related to camera control
-void InputHandler::KeyCallback(GLFWwindow *, int key, int, int action, int)
+void InputHandler::keyboardCallback(GLFWwindow *, int key, int, int action, int)
 {
   if(action != GLFW_PRESS) { return; }
   switch(key)
   {
     // Scramble the cube
     case GLFW_KEY_TAB:
-      cube->Scramble(cube->GetSize() * 10);
+      cube->scramble(cube->getSize() * 10);
       break;
 
       // Turn the front face
     case GLFW_KEY_H:
-      cube->Twist(cube->GetSize() - 1 - sliceMod, AXIS_Z);
+      cube->twist(cube->getSize() - 1 - sliceMod, Cube::Axis::Z);
       break;
     case GLFW_KEY_G:
-      cube->Twist(cube->GetSize() - 1 - sliceMod, -AXIS_Z);
+      cube->twist(cube->getSize() - 1 - sliceMod, -Cube::Axis::Z);
       break;
 
       // Turn the top face
     case GLFW_KEY_J:
-      cube->Twist(sliceMod, AXIS_Y);
+      cube->twist(sliceMod, Cube::Axis::Y);
       break;
     case GLFW_KEY_F:
-      cube->Twist(sliceMod, -AXIS_Y);
+      cube->twist(sliceMod, -Cube::Axis::Y);
       break;
 
       // Turn the left face
     case GLFW_KEY_D:
-      cube->Twist(sliceMod, -AXIS_X);
+      cube->twist(sliceMod, -Cube::Axis::X);
       break;
     case GLFW_KEY_E:
-      cube->Twist(sliceMod, AXIS_X);
+      cube->twist(sliceMod, Cube::Axis::X);
       break;
 
       // Turn the right face
     case GLFW_KEY_K:
-      cube->Twist(cube->GetSize()-1-sliceMod, -AXIS_X);
+      cube->twist(cube->getSize()-1-sliceMod, -Cube::Axis::X);
       break;
     case GLFW_KEY_I:
-      cube->Twist(cube->GetSize()-1-sliceMod, AXIS_X);
+      cube->twist(cube->getSize()-1-sliceMod, Cube::Axis::X);
       break;
 
       // Turn the bottom face
     case GLFW_KEY_L:
-      cube->Twist(cube->GetSize()-1-sliceMod, AXIS_Y);
+      cube->twist(cube->getSize()-1-sliceMod, Cube::Axis::Y);
       break;
     case GLFW_KEY_S:
-      cube->Twist(cube->GetSize()-1-sliceMod, -AXIS_Y);
+      cube->twist(cube->getSize()-1-sliceMod, -Cube::Axis::Y);
       break;
 
       // Turn the back face
     case GLFW_KEY_O:
-      cube->Twist(sliceMod, AXIS_Z);
+      cube->twist(sliceMod, Cube::Axis::Z);
       break;
     case GLFW_KEY_W:
-      cube->Twist(sliceMod, -AXIS_Z);
+      cube->twist(sliceMod, -Cube::Axis::Z);
       break;
 
     // Turn the whole cube on the x-axis
     case GLFW_KEY_B:
-      for(unsigned int layer = 0; layer < cube->GetSize(); ++layer)
-        cube->Twist(layer, -AXIS_X);
+      for(unsigned int layer = 0; layer < cube->getSize(); ++layer)
+      {
+        cube->twist(layer, -Cube::Axis::X);
+      }
       break;
     case GLFW_KEY_Y:
-      for(unsigned int layer = 0; layer < cube->GetSize(); ++layer)
-        cube->Twist(layer, AXIS_X);
+      for(unsigned int layer = 0; layer < cube->getSize(); ++layer)
+      {
+        cube->twist(layer, Cube::Axis::X);
+      }
       break;
 
       // Turn the whole cube on the y-axis
     case GLFW_KEY_A:
-      for(unsigned int layer = 0; layer < cube->GetSize(); ++layer)
-        cube->Twist(layer, -AXIS_Y);
+      for(unsigned int layer = 0; layer < cube->getSize(); ++layer)
+      {
+        cube->twist(layer, -Cube::Axis::Y);
+      }
       break;
     case GLFW_KEY_SEMICOLON:
-      for(unsigned int layer = 0; layer < cube->GetSize(); ++layer)
-        cube->Twist(layer, AXIS_Y);
+      for(unsigned int layer = 0; layer < cube->getSize(); ++layer)
+      {
+        cube->twist(layer, Cube::Axis::Y);
+      }
       break;
 
       // Turn the whole cube on the z-axis
     case GLFW_KEY_P:
-      for(unsigned int layer = 0; layer < cube->GetSize(); ++layer)
-        cube->Twist(layer, AXIS_Z);
+      for(unsigned int layer = 0; layer < cube->getSize(); ++layer)
+      {
+        cube->twist(layer, Cube::Axis::Z);
+      }
       break;
     case GLFW_KEY_Q:
-      for(unsigned int layer = 0; layer < cube->GetSize(); ++layer)
-        cube->Twist(layer, -AXIS_Z);
+      for(unsigned int layer = 0; layer < cube->getSize(); ++layer)
+      {
+        cube->twist(layer, -Cube::Axis::Z);
+      }
       break;
 
       // Change the target slice
     case GLFW_KEY_LEFT_SHIFT:
-      if(sliceMod == 0)
-        break;
-      else
+      if(sliceMod > 0)
+      {
         --sliceMod;
+      }
       break;
     case GLFW_KEY_RIGHT_SHIFT:
-      if(sliceMod == cube->GetSize() - 1)
-        break;
-      else
+      if(sliceMod < cube->getSize() - 1)
+      {
         ++sliceMod;
+      }
       break;
 
       // Choose a new cube size
     case GLFW_KEY_1:
-      cube->Resize(sliceMod*10+1);
+      cube->resize(sliceMod*10+1);
       break;
     case GLFW_KEY_2:
-      cube->Resize(sliceMod*10+2);
+      cube->resize(sliceMod*10+2);
       break;
     case GLFW_KEY_3:
-      cube->Resize(sliceMod*10+3);
+      cube->resize(sliceMod*10+3);
       break;
     case GLFW_KEY_4:
-      cube->Resize(sliceMod*10+4);
+      cube->resize(sliceMod*10+4);
       break;
     case GLFW_KEY_5:
-      cube->Resize(sliceMod*10+5);
+      cube->resize(sliceMod*10+5);
       break;
     case GLFW_KEY_6:
-      cube->Resize(sliceMod*10+6);
+      cube->resize(sliceMod*10+6);
       break;
     case GLFW_KEY_7:
-      cube->Resize(sliceMod*10+7);
+      cube->resize(sliceMod*10+7);
       break;
     case GLFW_KEY_8:
-      cube->Resize(sliceMod*10+8);
+      cube->resize(sliceMod*10+8);
       break;
     case GLFW_KEY_9:
-      cube->Resize(sliceMod*10+9);
+      cube->resize(sliceMod*10+9);
       break;
     case GLFW_KEY_0:
-      cube->Resize(sliceMod*10+10);
+      cube->resize(sliceMod*10+10);
       break;
 
       // Default statement so compiler will stop whining about all enum cases not being handled

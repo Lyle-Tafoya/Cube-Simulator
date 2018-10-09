@@ -13,9 +13,9 @@ class InputHandler
   static size_t sliceMod;
 
 public:
-  static void Init(Cube *cube, Viewport *viewport);
-  static void Update(float deltaTime);
-  static void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+  static void init(Cube *cube, Viewport *viewport);
+  static void update(float deltaTime);
+  static void keyboardCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 };
 
 #endif

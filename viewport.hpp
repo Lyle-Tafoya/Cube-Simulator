@@ -13,10 +13,10 @@ class Viewport
 public:
   Viewport(int width, int height);
   ~Viewport();
-  GLFWwindow *GetWindow();
-  void ResizeWindow(int width, int height);
-  void RotateCamera(float x, float y, float);
-  void ZoomCamera(float zoom);
+  inline GLFWwindow *getWindow() { return window; }
+  void resizeWindow(int width, int height);
+  void rotateCamera(float x, float y, float);
+  void zoomCamera(float zoom);
 };
 
 #endif

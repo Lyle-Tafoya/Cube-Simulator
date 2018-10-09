@@ -1,6 +1,5 @@
 #include <GLFW/glfw3.h>
 #include <GL/glu.h>
-#include "cube.hpp"
 #include "viewport.hpp"
 
 Viewport::Viewport(int width, int height)
@@ -19,7 +18,7 @@ Viewport::Viewport(int width, int height)
   glClearDepth(1.f);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
-  ResizeWindow(width, height);
+  resizeWindow(width, height);
 }
 
 Viewport::~Viewport()
@@ -27,13 +26,8 @@ Viewport::~Viewport()
   glfwTerminate();
 }
 
-GLFWwindow *Viewport::GetWindow()
-{
-  return window;
-}
-
 // Adjust the projection matrix to a new width/height
-void Viewport::ResizeWindow(int width, int height)
+void Viewport::resizeWindow(int width, int height)
 {
   glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
@@ -47,13 +41,13 @@ void Viewport::ResizeWindow(int width, int height)
 
 }
 
-void Viewport::RotateCamera(float xAxis, float yAxis, float)
+void Viewport::rotateCamera(float xAxis, float yAxis, float)
 {
   xAngle += xAxis;
   yAngle += yAxis;
 }
 
-void Viewport::ZoomCamera(float zoom)
+void Viewport::zoomCamera(float zoom)
 {
   this->zoom += zoom;
 }
