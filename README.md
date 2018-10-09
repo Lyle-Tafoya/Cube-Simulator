@@ -47,9 +47,3 @@ r-shift - Move active layer in by 1
 #### Dependencies:
 
 GLFW 3
-
-#### Libraries Linked Against:
-
-GL
-GLU
-GLFW
