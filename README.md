@@ -46,12 +46,10 @@ r-shift - Move active layer in by 1
 
 #### Dependencies:
 
-SFML 2.1
+GLFW 3
 
 #### Libraries Linked Against:
 
-GL  
-GLU  
-sfml-graphics  
-sfml-system  
-sfml-window
+GL
+GLU
+GLFW

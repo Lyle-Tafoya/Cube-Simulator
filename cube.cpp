@@ -1,7 +1,8 @@
+#include <GLFW/glfw3.h>
 #include <cstdlib>
 #include <ctime>
 
-#include "cube.h"
+#include "cube.hpp"
 
 // Generate a random number between from and to
 int randNum(int from, int to)
@@ -9,14 +10,24 @@ int randNum(int from, int to)
   return (rand() % (to - from + 1)) + from;
 }
 
-cube::twistInfo::twistInfo(unsigned int initLayer, short initAxis)
-               : layer(initLayer), axis(initAxis) {}
+// Draw a rectangle
+inline void drawRect(float height, float aspectRatio = 1.f)
+{
+  glBegin(GL_QUADS);
+    glVertex3f((-height)/2.f, height * aspectRatio / 2.f,     0.f);
+    glVertex3f(height/2.f,    height * aspectRatio / 2.f,     0.f);
+    glVertex3f(height/2.f,    (-height * aspectRatio) / 2.f,  0.f);
+    glVertex3f((-height)/2.f, (-height * aspectRatio) / 2.f,  0.f);
+  glEnd();
+}
 
-cube::sticker::sticker(short side_num)
+Cube::twistInfo::twistInfo(unsigned int initLayer, short initAxis)
+               : axis(initAxis), layer(initLayer) {}
+
+Cube::sticker::sticker(short side_num)
              : color(side_num), rotating(false) {}
 
-cube::cube(unsigned int cubiesPerEdge)
-    : rotate_axis(AXIS_UNDEFINED), rotate_angle(0.f), CUBIES_PER_EDGE(cubiesPerEdge)
+Cube::Cube(unsigned int cubiesPerEdge) : rotateAngle(0.f), rotateAxis(AXIS_UNDEFINED), CUBIES_PER_EDGE(cubiesPerEdge)
 {
   // Seed the random number generator
   srand(time(NULL));
@@ -35,7 +46,7 @@ cube::cube(unsigned int cubiesPerEdge)
 }
 
 // Delete the memory we allocated for the stickers
-cube::~cube()
+Cube::~Cube()
 {
   for(int sideNum = 0; sideNum < 6; sideNum++)
   {
@@ -49,22 +60,119 @@ cube::~cube()
   }
 }
 
-// Scramble the cube
-void cube::Scramble(unsigned int numTwists)
+void Cube::Draw(float deltaTime)
+{
+  // Update the rotation animation
+  if(rotateAxis != AXIS_UNDEFINED)
+  {
+    rotateAngle += deltaTime*1000.f / 200.f * 90.f;
+
+    // If we are done rotating, set our values back to default
+    if(rotateAngle >= 90.f)
+    {
+      rotateAxis = AXIS_UNDEFINED;
+      rotateAngle = 0.f;
+    }
+  }
+
+  // Loop through every cubie (piece)
+  for(int sideNum = 0; sideNum < 6; sideNum++)
+    for(unsigned int x = 0; x < CUBIES_PER_EDGE; x++)
+      for(unsigned int y = 0; y < CUBIES_PER_EDGE; y++)
+      {
+        glPushMatrix();
+
+          // Deal with the rotation of stickers
+          if(rotateAxis == AXIS_UNDEFINED)
+              stickers[sideNum][x][y]->rotating = false;
+
+          // Rotate stickers if necessary
+          if(stickers[sideNum][x][y]->rotating == true)
+          {
+            switch(rotateAxis)
+            {
+              // Counter-Clockwise Twists
+              case -AXIS_X:
+                glRotatef(rotateAngle-90.f, 1.f, 0.f, 0.f);
+                break;
+              case -AXIS_Y:
+                glRotatef(rotateAngle-90.f, 0.f, 1.f, 0.f);
+                break;
+              case -AXIS_Z:
+                glRotatef(rotateAngle-90.f, 0.f, 0.f, 1.f);
+                break;
+
+              // Clockwise Twists
+              case AXIS_X:
+                glRotatef(90.f-rotateAngle, 1.f, 0.f, 0.f);
+                break;
+              case AXIS_Y:
+                glRotatef(90.f-rotateAngle, 0.f, 1.f, 0.f);
+                break;
+              case AXIS_Z:
+                glRotatef(90.f-rotateAngle, 0.f, 0.f, 1.f);
+                break;
+            }
+          }
+
+          // Rotate to the proper side
+          switch(sideNum)
+          {
+            case SIDE_TOP:
+              glRotatef(-90.f, 1.f, 0.f, 0.f);
+              break;
+            case SIDE_BOTTOM:
+              glRotatef(90.f, 1.f, 0.f, 0.f);
+              break;
+            case SIDE_FRONT: // It should already be facing the front
+              break;
+            case SIDE_BACK:
+              glRotatef(180.f, 0.f, 1.f, 0.f);
+              break;
+            case SIDE_LEFT:
+              glRotatef(-90.f, 0.f, 1.f, 0.f);
+              break;
+            case SIDE_RIGHT:
+              glRotatef(90.f, 0.f, 1.f, 0.f);
+              break;
+          }
+
+          // Move away from the center of the cube
+          glTranslatef((CUBIES_PER_EDGE-1.f)/-2.f*(STICKER_WIDTH+STICKER_SPACING)+x*(STICKER_WIDTH+STICKER_SPACING),
+                       -((CUBIES_PER_EDGE-1.f)/-2.f*(STICKER_WIDTH+STICKER_SPACING)+y*(STICKER_WIDTH+STICKER_SPACING)),
+                       CUBIES_PER_EDGE/2.f*STICKER_WIDTH+(CUBIES_PER_EDGE/2.f+0.5f)*STICKER_SPACING);
+
+          // Draw the sticker
+          glColor3f(colors[stickers[sideNum][x][y]->color][0], colors[stickers[sideNum][x][y]->color][1], colors[stickers[sideNum][x][y]->color][2]);
+          drawRect(STICKER_WIDTH);
+
+        glPopMatrix();
+      }
+
+  // If we have any twists waiting to be executed, do so now
+  if(rotateAxis == AXIS_UNDEFINED && !twist_queue.empty())
+  {
+    Twist(twist_queue.front().layer, twist_queue.front().axis);
+    twist_queue.pop();
+  }
+}
+
+// Scramble the Cube
+void Cube::Scramble(unsigned int numTwists)
 {
   for(unsigned int i = 0; i < numTwists; i++)
     Twist(randNum(0, CUBIES_PER_EDGE-1), randNum(AXIS_X, AXIS_Z));
 }
 
-// Twist a single layer of the rubik's cube along a given axis
-void cube::Twist(unsigned int layer, short axis)
+// Twist a single layer of the rubik's Cube along a given axis
+void Cube::Twist(unsigned int layer, short axis)
 {
   // We can't twist a layer that doesn't exist
   if(layer >= CUBIES_PER_EDGE)
     return;
 
   // If we are in the middle of rotating, add this twist to the queue
-  if(rotate_axis != AXIS_UNDEFINED && (axis != rotate_axis || !twist_queue.empty()))
+  if(rotateAxis != AXIS_UNDEFINED && (axis != rotateAxis || !twist_queue.empty()))
   {
     twist_queue.push(twistInfo(layer, axis));
     return;
@@ -85,8 +193,8 @@ void cube::Twist(unsigned int layer, short axis)
     }
   }
 
-  // Let the cube know that it's supposed to start rotating
-  rotate_axis = axis;
+  // Let the Cube know that it's supposed to start rotating
+  rotateAxis = axis;
 
   // Determine if we are rotating clockwise or counter clockwise
   bool direction = DIR_CLOCKWISE;

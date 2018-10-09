@@ -1,39 +1,30 @@
-#include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
-
-#include "display.h"
-
-// input.cpp
-extern void HandleInput();
-
-// Global Variables
-cube *pCube;
-sf::Window *pWindow;
-viewPort *pCamera;
+#include <chrono>
+#include "cube.hpp"
+#include "inputhandler.hpp"
+#include "viewport.hpp"
 
 int main()
 {
-  pCube = new cube();
+  Viewport *viewport = new Viewport(800, 600);
+  Cube *cube = new Cube();
+  InputHandler::Init(cube, viewport);
 
-  // Create the main window
-  pWindow = new sf::Window(sf::VideoMode(800, 600, 32), "Cube Simulator", sf::Style::Default, sf::ContextSettings(32));
-  pCamera = new viewPort(800, 600);
-
-  // Main Loop
-  while(pWindow->isOpen())
+  float deltaTime = 0;
+  std::chrono::high_resolution_clock::time_point lastUpdate = std::chrono::high_resolution_clock::now();
+  std::chrono::high_resolution_clock::time_point currentTime;
+  while(!glfwWindowShouldClose(viewport->GetWindow()))
   {
-    HandleInput();
+    currentTime = std::chrono::high_resolution_clock::now();
+    deltaTime = std::chrono::duration<float>(currentTime-lastUpdate).count();
+    lastUpdate = currentTime;
 
+    glfwPollEvents();
+    InputHandler::Update(deltaTime);
 
-    // Clear and draw
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glPushMatrix();
+    cube->Draw(deltaTime);
 
-      pCamera->Update();
-      pCube->Display();
-      pWindow->display();
-
-    glPopMatrix();
+    glfwSwapBuffers(viewport->GetWindow());
   }
 
   return 0;

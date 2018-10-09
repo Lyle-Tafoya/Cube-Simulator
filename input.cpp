@@ -1,11 +1,7 @@
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
-
 #include "display.h"
 
 extern cube *pCube;
 extern viewPort *pCamera;
-extern sf::Window *pWindow;
 
 // display.cpp
 extern void createCube(unsigned int cubiesPerEdge = 3);
@@ -22,21 +18,21 @@ void viewPort::Update()
   //
 
   // Rotate camera on the x-axis
-  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+  if(GLFW_KEY_isKeyPressed(GLFW_KEY_Down))
     xAngle += elapsedTime / 5000.f * 360.f;
-  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+  if(GLFW_KEY_isKeyPressed(GLFW_KEY_Up))
     xAngle -= elapsedTime / 5000.f * 360.f;
 
   // Rotate camera on the y-axis
-  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+  if(GLFW_KEY_isKeyPressed(GLFW_KEY_Left))
     yAngle -= elapsedTime / 3000.f * 360.f;
-  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+  if(GLFW_KEY_isKeyPressed(GLFW_KEY_Right))
     yAngle += elapsedTime / 3000.f * 360.f;
 
   // Zoom in and out
-  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Equal))
+  if(GLFW_KEY_isKeyPressed(GLFW_KEY_Equal))
     zoom += elapsedTime / 3000.f * pCube->CUBIES_PER_EDGE * 100.f;
-  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Dash))
+  if(GLFW_KEY_isKeyPressed(GLFW_KEY_Dash))
     zoom -= elapsedTime / 3000.f * pCube->CUBIES_PER_EDGE * 100.f;
 
   // TODO This part should be in display.cpp
@@ -66,101 +62,101 @@ void HandleInput()
       switch(event.key.code)
       {
         // Quit on escape
-        case sf::Keyboard::Escape:
+        case GLFW_KEY_Escape:
           pWindow->close();
           break;
 
         // Scramble the cube
-        case sf::Keyboard::Tab:
+        case GLFW_KEY_Tab:
           pCube->Scramble(pCube->CUBIES_PER_EDGE * 10);
           break;
 
           // Turn the front face
-        case sf::Keyboard::H:
+        case GLFW_KEY_H:
           pCube->Twist(pCube->CUBIES_PER_EDGE - 1 - sliceMod, AXIS_Z);
           break;
-        case sf::Keyboard::G:
+        case GLFW_KEY_G:
           pCube->Twist(pCube->CUBIES_PER_EDGE - 1 - sliceMod, -AXIS_Z);
           break;
 
           // Turn the top face
-        case sf::Keyboard::J:
+        case GLFW_KEY_J:
           pCube->Twist(sliceMod, AXIS_Y);
           break;
-        case sf::Keyboard::F:
+        case GLFW_KEY_F:
           pCube->Twist(sliceMod, -AXIS_Y);
           break;
 
           // Turn the left face
-        case sf::Keyboard::D:
+        case GLFW_KEY_D:
           pCube->Twist(sliceMod, -AXIS_X);
           break;
-        case sf::Keyboard::E:
+        case GLFW_KEY_E:
           pCube->Twist(sliceMod, AXIS_X);
           break;
 
           // Turn the right face
-        case sf::Keyboard::K:
+        case GLFW_KEY_K:
           pCube->Twist(pCube->CUBIES_PER_EDGE-1-sliceMod, -AXIS_X);
           break;
-        case sf::Keyboard::I:
+        case GLFW_KEY_I:
           pCube->Twist(pCube->CUBIES_PER_EDGE-1-sliceMod, AXIS_X);
           break;
 
           // Turn the bottom face
-        case sf::Keyboard::L:
+        case GLFW_KEY_L:
           pCube->Twist(pCube->CUBIES_PER_EDGE-1-sliceMod, AXIS_Y);
           break;
-        case sf::Keyboard::S:
+        case GLFW_KEY_S:
           pCube->Twist(pCube->CUBIES_PER_EDGE-1-sliceMod, -AXIS_Y);
           break;
 
           // Turn the back face
-        case sf::Keyboard::O:
+        case GLFW_KEY_O:
           pCube->Twist(sliceMod, AXIS_Z);
           break;
-        case sf::Keyboard::W:
+        case GLFW_KEY_W:
           pCube->Twist(sliceMod, -AXIS_Z);
           break;
 
         // Turn the whole cube on the x-axis
-        case sf::Keyboard::B:
+        case GLFW_KEY_B:
           for(unsigned int layer = 0; layer < pCube->CUBIES_PER_EDGE; layer++)
             pCube->Twist(layer, -AXIS_X);
           break;
-        case sf::Keyboard::Y:
+        case GLFW_KEY_Y:
           for(unsigned int layer = 0; layer < pCube->CUBIES_PER_EDGE; layer++)
             pCube->Twist(layer, AXIS_X);
           break;
 
           // Turn the whole cube on the y-axis
-        case sf::Keyboard::A:
+        case GLFW_KEY_A:
           for(unsigned int layer = 0; layer < pCube->CUBIES_PER_EDGE; layer++)
             pCube->Twist(layer, -AXIS_Y);
           break;
-        case sf::Keyboard::SemiColon:
+        case GLFW_KEY_SemiColon:
           for(unsigned int layer = 0; layer < pCube->CUBIES_PER_EDGE; layer++)
             pCube->Twist(layer, AXIS_Y);
           break;
 
           // Turn the whole cube on the z-axis
-        case sf::Keyboard::P:
+        case GLFW_KEY_P:
           for(unsigned int layer = 0; layer < pCube->CUBIES_PER_EDGE; layer++)
             pCube->Twist(layer, AXIS_Z);
           break;
-        case sf::Keyboard::Q:
+        case GLFW_KEY_Q:
           for(unsigned int layer = 0; layer < pCube->CUBIES_PER_EDGE; layer++)
             pCube->Twist(layer, -AXIS_Z);
           break;
 
           // Change the target slice
-        case sf::Keyboard::LShift:
+        case GLFW_KEY_LShift:
           if(sliceMod == 0)
             break;
           else
             sliceMod--;
           break;
-        case sf::Keyboard::RShift:
+        case GLFW_KEY_RShift:
           if(sliceMod == pCube->CUBIES_PER_EDGE - 1)
             break;
           else
@@ -168,39 +164,39 @@ void HandleInput()
           break;
 
           // Reset the Camera
-        case sf::Keyboard::BackSpace:
+        case GLFW_KEY_BackSpace:
           *pCamera = viewPort(pWindow->getSize().x, pWindow->getSize().y);
           break;
 
           // Choose a new cube size
-        case sf::Keyboard::Num1:
+        case GLFW_KEY_Num1:
           createCube(sliceMod*10+1);
           break;
-        case sf::Keyboard::Num2:
+        case GLFW_KEY_Num2:
           createCube(sliceMod*10+2);
           break;
-        case sf::Keyboard::Num3:
+        case GLFW_KEY_Num3:
           createCube(sliceMod*10+3);
           break;
-        case sf::Keyboard::Num4:
+        case GLFW_KEY_Num4:
           createCube(sliceMod*10+4);
           break;
-        case sf::Keyboard::Num5:
+        case GLFW_KEY_Num5:
           createCube(sliceMod*10+5);
           break;
-        case sf::Keyboard::Num6:
+        case GLFW_KEY_Num6:
           createCube(sliceMod*10+6);
           break;
-        case sf::Keyboard::Num7:
+        case GLFW_KEY_Num7:
           createCube(sliceMod*10+7);
           break;
-        case sf::Keyboard::Num8:
+        case GLFW_KEY_Num8:
           createCube(sliceMod*10+8);
           break;
-        case sf::Keyboard::Num9:
+        case GLFW_KEY_Num9:
           createCube(sliceMod*10+9);
           break;
-        case sf::Keyboard::Num0:
+        case GLFW_KEY_Num0:
           createCube(sliceMod*10+10);
           break;
 
