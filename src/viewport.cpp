@@ -3,7 +3,7 @@
 #include "viewport.hpp"
 
 Viewport::Viewport(int width, int height)
-        : xAngle(35.f), yAngle(-35.f), zoom(0.f)
+        : width(width), height(height), xAngle(35.f), yAngle(-35.f), zoom(0.f)
 {
   // Setup GLFW
   glfwInit();
@@ -12,13 +12,15 @@ Viewport::Viewport(int width, int height)
   window = glfwCreateWindow(width, height, "Cube Simulator", NULL, NULL);
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);
+  glfwSetFramebufferSizeCallback(window, Viewport::framebufferSizeCallback);
 
   // Setup OpenGL
   glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
   glClearDepth(1.f);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
-  resizeWindow(width, height);
+  Viewport::framebufferSizeCallback(nullptr, width, height);
+  setCamera(xAngle, yAngle, zoom);
 }
 
 Viewport::~Viewport()
@@ -31,14 +33,12 @@ void Viewport::adjustCamera(float xAngle, float yAngle, float zoom)
   setCamera(this->xAngle+xAngle, this->yAngle+yAngle, this->zoom+zoom);
 }
 
-// Adjust the projection matrix to a new width/height
-void Viewport::resizeWindow(int width, int height)
+void Viewport::framebufferSizeCallback(GLFWwindow *, int width, int height)
 {
   glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(45.f, static_cast<float>(width) / static_cast<float>(height), 1.f, 10000.f);
-  setCamera(xAngle, yAngle, zoom);
 }
 
 void Viewport::resetCamera()

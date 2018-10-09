@@ -6,6 +6,8 @@
 class Viewport
 {
   GLFWwindow *window;
+  int width;
+  int height;
   float xAngle;
   float yAngle;
   float zoom;
@@ -18,6 +20,8 @@ public:
   void resetCamera();
   void resizeWindow(int width, int height);
   void setCamera(float xAngle, float yAngle, float zoom);
+
+  static void framebufferSizeCallback(GLFWwindow *window, int x, int y);
 };
 
 #endif
