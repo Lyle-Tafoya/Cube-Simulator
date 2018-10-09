@@ -32,13 +32,10 @@ void Viewport::resizeWindow(int width, int height)
   glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(90.f, static_cast<float>(width) / static_cast<float>(height), 1.f, 10000.f);
+  gluPerspective(45.f, static_cast<float>(width) / static_cast<float>(height), 1.f, 10000.f);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  gluLookAt(0.f, 0.f, 237.f,
-            0.f, 0.f, 0.f,
-            0.f, 1.f, 0.f);
-
+  gluLookAt(0.f, 0.f, 500.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f);
 }
 
 void Viewport::rotateCamera(float xAxis, float yAxis, float)
