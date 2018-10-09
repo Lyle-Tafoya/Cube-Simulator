@@ -52,3 +52,8 @@ void Viewport::RotateCamera(float xAxis, float yAxis, float)
   xAngle += xAxis;
   yAngle += yAxis;
 }
+
+void Viewport::ZoomCamera(float zoom)
+{
+  this->zoom += zoom;
+}

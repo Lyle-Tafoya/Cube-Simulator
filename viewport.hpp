@@ -16,6 +16,7 @@ public:
   GLFWwindow *GetWindow();
   void ResizeWindow(int width, int height);
   void RotateCamera(float x, float y, float);
+  void ZoomCamera(float zoom);
 };
 
 #endif

@@ -46,6 +46,7 @@ void InputHandler::Update(float deltaTime)
     zoom += elapsedTime / 3000.f * cube->CUBIES_PER_EDGE * 100.f;
   if(glfwGetKey(glfwWindow, GLFW_KEY_MINUS) == GLFW_PRESS)
     zoom -= elapsedTime / 3000.f * cube->CUBIES_PER_EDGE * 100.f;
+  viewport->ZoomCamera(zoom);
 
   glTranslatef(0.f, 0.f, zoom);
   glRotatef(xAngle, 1.f, 0.f, 0.f);
