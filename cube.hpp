@@ -47,9 +47,10 @@ class Cube
   };
 
   size_t cubiesPerEdge;
-  float rotateAngle;     // The current angle of rotation (0-90)
-  short rotateAxis;      // The axis we are rotating around
-  Sticker ***stickers[6]; // A 3D array of stickers
+  float rotateAngle;
+  short rotateAxis;
+  Sticker ****stickers;
+  Sticker ****tmpStickers;
   std::queue<TwistInfo> twistQueue;
 
   void cleanup();

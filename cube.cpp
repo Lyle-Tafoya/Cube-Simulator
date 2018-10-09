@@ -53,11 +53,16 @@ void Cube::cleanup()
       for(unsigned int y = 0; y < cubiesPerEdge; ++y)
       {
         delete stickers[sideNum][x][y];
+        delete tmpStickers[sideNum][x][y];
       }
       delete[] stickers[sideNum][x];
+      delete[] tmpStickers[sideNum][x];
     }
     delete[] stickers[sideNum];
+    delete[] tmpStickers[sideNum];
   }
+  delete[] stickers;
+  delete[] tmpStickers;
 }
 
 void Cube::draw(float deltaTime)
@@ -169,15 +174,20 @@ void Cube::init()
   rotateAxis = Axis::UNDEFINED;
 
   // Create/initialize all the stickers
+  stickers = new Sticker ***[6];
+  tmpStickers = new Sticker ***[6];
   for(int sideNum = 0; sideNum < 6; ++sideNum)
   {
     stickers[sideNum] = new Sticker **[cubiesPerEdge];
+    tmpStickers[sideNum] = new Sticker **[cubiesPerEdge];
     for(unsigned int x = 0; x < cubiesPerEdge; ++x)
     {
       stickers[sideNum][x] = new Sticker *[cubiesPerEdge];
+      tmpStickers[sideNum][x] = new Sticker *[cubiesPerEdge];
       for(unsigned int y = 0; y < cubiesPerEdge; ++y)
       {
         stickers[sideNum][x][y] = new Sticker(sideNum);
+        tmpStickers[sideNum][x][y] = new Sticker(sideNum);
       }
     }
   }
@@ -205,17 +215,13 @@ void Cube::twist(unsigned int layer, short axis)
     return;
   }
 
-  // Create a temporary array of stickers to work with
-  Sticker ***tmp[6];
-  for(int sideNum = 0; sideNum < 6; ++sideNum)
+  for(int side = 0; side < 6; ++side)
   {
-    tmp[sideNum] = new Sticker **[cubiesPerEdge];
-    for(unsigned int x = 0; x < cubiesPerEdge; ++x)
+    for(size_t x = 0; x < cubiesPerEdge; ++x)
     {
-      tmp[sideNum][x] = new Sticker *[cubiesPerEdge];
-      for(unsigned int y = 0; y < cubiesPerEdge; ++y)
+      for(size_t y = 0; y < cubiesPerEdge; ++y)
       {
-        tmp[sideNum][x][y] = stickers[sideNum][x][y];
+        *tmpStickers[side][x][y] = *stickers[side][x][y];
       }
     }
   }
@@ -238,28 +244,28 @@ void Cube::twist(unsigned int layer, short axis)
     case Axis::X:
       side = ((layer == 0) ? Side::LEFT : ((layer == (cubiesPerEdge - 1)) ? Side::RIGHT : -1));
 
-      for(unsigned int y = 0; y < cubiesPerEdge; y++)
+      for(size_t y = 0; y < cubiesPerEdge; y++)
       {
         if(direction == Direction::CLOCKWISE)
         {
-          tmp[Side::FRONT][layer][y] = stickers[Side::BOTTOM][layer][y];
-          tmp[Side::BOTTOM][layer][y] = stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
-          tmp[Side::BACK][cubiesPerEdge-1-layer][y] = stickers[Side::TOP][layer][cubiesPerEdge-1-y];
-          tmp[Side::TOP][layer][y] = stickers[Side::FRONT][layer][y];
+          *tmpStickers[Side::FRONT][layer][y] = *stickers[Side::BOTTOM][layer][y];
+          *tmpStickers[Side::BOTTOM][layer][y] = *stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
+          *tmpStickers[Side::BACK][cubiesPerEdge-1-layer][y] = *stickers[Side::TOP][layer][cubiesPerEdge-1-y];
+          *tmpStickers[Side::TOP][layer][y] = *stickers[Side::FRONT][layer][y];
         }
         else
         {
-          tmp[Side::FRONT][layer][y] = stickers[Side::TOP][layer][y];
-          tmp[Side::TOP][layer][y] = stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
-          tmp[Side::BACK][cubiesPerEdge-1-layer][y] = stickers[Side::BOTTOM][layer][cubiesPerEdge-1-y];
-          tmp[Side::BOTTOM][layer][y] = stickers[Side::FRONT][layer][y];
+          *tmpStickers[Side::FRONT][layer][y] = *stickers[Side::TOP][layer][y];
+          *tmpStickers[Side::TOP][layer][y] = *stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
+          *tmpStickers[Side::BACK][cubiesPerEdge-1-layer][y] = *stickers[Side::BOTTOM][layer][cubiesPerEdge-1-y];
+          *tmpStickers[Side::BOTTOM][layer][y] = *stickers[Side::FRONT][layer][y];
         }
 
         // Start rotating the stickers
-        tmp[Side::FRONT][layer][y]->rotating = true;
-        tmp[Side::TOP][layer][y]->rotating = true;
-        tmp[Side::BOTTOM][layer][y]->rotating = true;
-        tmp[Side::BACK][cubiesPerEdge-1-layer][y]->rotating = true;
+        tmpStickers[Side::FRONT][layer][y]->rotating = true;
+        tmpStickers[Side::TOP][layer][y]->rotating = true;
+        tmpStickers[Side::BOTTOM][layer][y]->rotating = true;
+        tmpStickers[Side::BACK][cubiesPerEdge-1-layer][y]->rotating = true;
       }
       break;
 
@@ -267,29 +273,29 @@ void Cube::twist(unsigned int layer, short axis)
     case Axis::Y:
       side = ((layer == 0) ? Side::TOP : ((layer == (cubiesPerEdge - 1)) ? Side::BOTTOM : -1));
 
-      for(unsigned int x = 0; x < cubiesPerEdge; x++)
+      for(size_t x = 0; x < cubiesPerEdge; x++)
       {
         if(direction == Direction::CLOCKWISE)
         {
-          tmp[Side::FRONT][x][layer] = stickers[Side::RIGHT][x][layer];
-          tmp[Side::RIGHT][x][layer] = stickers[Side::BACK][x][layer];
-          tmp[Side::BACK][x][layer] = stickers[Side::LEFT][x][layer];
-          tmp[Side::LEFT][x][layer] = stickers[Side::FRONT][x][layer];
+          *tmpStickers[Side::FRONT][x][layer] = *stickers[Side::RIGHT][x][layer];
+          *tmpStickers[Side::RIGHT][x][layer] = *stickers[Side::BACK][x][layer];
+          *tmpStickers[Side::BACK][x][layer] = *stickers[Side::LEFT][x][layer];
+          *tmpStickers[Side::LEFT][x][layer] = *stickers[Side::FRONT][x][layer];
 
         }
         else
         {
-          tmp[Side::RIGHT][x][layer] = stickers[Side::FRONT][x][layer];
-          tmp[Side::BACK][x][layer] = stickers[Side::RIGHT][x][layer];
-          tmp[Side::LEFT][x][layer] = stickers[Side::BACK][x][layer];
-          tmp[Side::FRONT][x][layer] = stickers[Side::LEFT][x][layer];
+          *tmpStickers[Side::RIGHT][x][layer] = *stickers[Side::FRONT][x][layer];
+          *tmpStickers[Side::BACK][x][layer] = *stickers[Side::RIGHT][x][layer];
+          *tmpStickers[Side::LEFT][x][layer] = *stickers[Side::BACK][x][layer];
+          *tmpStickers[Side::FRONT][x][layer] = *stickers[Side::LEFT][x][layer];
         }
 
         // Start rotating the stickers
-        tmp[Side::FRONT][x][layer]->rotating = true;
-        tmp[Side::RIGHT][x][layer]->rotating = true;
-        tmp[Side::BACK][x][layer]->rotating = true;
-        tmp[Side::LEFT][x][layer]->rotating = true;
+        tmpStickers[Side::FRONT][x][layer]->rotating = true;
+        tmpStickers[Side::RIGHT][x][layer]->rotating = true;
+        tmpStickers[Side::BACK][x][layer]->rotating = true;
+        tmpStickers[Side::LEFT][x][layer]->rotating = true;
       }
       break;
 
@@ -297,28 +303,28 @@ void Cube::twist(unsigned int layer, short axis)
     case Axis::Z:
       side = ((layer == 0) ? Side::BACK : ((layer == (cubiesPerEdge - 1)) ? Side::FRONT : -1));
 
-      for(unsigned int y = 0; y < cubiesPerEdge; ++y)
+      for(size_t y = 0; y < cubiesPerEdge; ++y)
       {
         if(direction == Direction::CLOCKWISE)
         {
-          tmp[Side::LEFT][layer][y] = stickers[Side::BOTTOM][y][cubiesPerEdge-1-layer];
-          tmp[Side::BOTTOM][y][cubiesPerEdge-1-layer] = stickers[Side::RIGHT][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
-          tmp[Side::RIGHT][cubiesPerEdge-1-layer][y] = stickers[Side::TOP][y][layer];
-          tmp[Side::TOP][y][layer] = stickers[Side::LEFT][layer][cubiesPerEdge-1-y];
+          *tmpStickers[Side::LEFT][layer][y] = *stickers[Side::BOTTOM][y][cubiesPerEdge-1-layer];
+          *tmpStickers[Side::BOTTOM][y][cubiesPerEdge-1-layer] = *stickers[Side::RIGHT][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
+          *tmpStickers[Side::RIGHT][cubiesPerEdge-1-layer][y] = *stickers[Side::TOP][y][layer];
+          *tmpStickers[Side::TOP][y][layer] = *stickers[Side::LEFT][layer][cubiesPerEdge-1-y];
         }
         else
         {
-          tmp[Side::LEFT][layer][y] = stickers[Side::TOP][cubiesPerEdge-1-y][layer];
-          tmp[Side::TOP][y][layer] = stickers[Side::RIGHT][cubiesPerEdge-1-layer][y];
-          tmp[Side::RIGHT][cubiesPerEdge-1-layer][y] = stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer];
-          tmp[Side::BOTTOM][y][cubiesPerEdge-1-layer] = stickers[Side::LEFT][layer][y];
+          *tmpStickers[Side::LEFT][layer][y] = *stickers[Side::TOP][cubiesPerEdge-1-y][layer];
+          *tmpStickers[Side::TOP][y][layer] = *stickers[Side::RIGHT][cubiesPerEdge-1-layer][y];
+          *tmpStickers[Side::RIGHT][cubiesPerEdge-1-layer][y] = *stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer];
+          *tmpStickers[Side::BOTTOM][y][cubiesPerEdge-1-layer] = *stickers[Side::LEFT][layer][y];
         }
 
         // Start rotating the stickers
-        tmp[Side::LEFT][layer][y]->rotating = true;
-        tmp[Side::TOP][y][layer]->rotating = true;
-        tmp[Side::RIGHT][cubiesPerEdge-1-layer][y]->rotating = true;
-        tmp[Side::BOTTOM][y][cubiesPerEdge-1-layer]->rotating = true;
+        tmpStickers[Side::LEFT][layer][y]->rotating = true;
+        tmpStickers[Side::TOP][y][layer]->rotating = true;
+        tmpStickers[Side::RIGHT][cubiesPerEdge-1-layer][y]->rotating = true;
+        tmpStickers[Side::BOTTOM][y][cubiesPerEdge-1-layer]->rotating = true;
       }
       break;
   }
@@ -330,34 +336,24 @@ void Cube::twist(unsigned int layer, short axis)
     {
       direction = !direction;
     }
-    for(unsigned int x = 0; x < cubiesPerEdge; ++x)
+    for(size_t x = 0; x < cubiesPerEdge; ++x)
     {
-      for(unsigned int y = 0; y < cubiesPerEdge; ++y)
+      for(size_t y = 0; y < cubiesPerEdge; ++y)
       {
         if(direction == Direction::CLOCKWISE)
         {
-          tmp[side][x][y] = stickers[side][y][cubiesPerEdge-1-x];
+          *tmpStickers[side][x][y] = *stickers[side][y][cubiesPerEdge-1-x];
         }
         else
         {
-          tmp[side][x][y] = stickers[side][cubiesPerEdge-1-y][x];
+          *tmpStickers[side][x][y] = *stickers[side][cubiesPerEdge-1-y][x];
         }
-        tmp[side][x][y]->rotating = true;
+        tmpStickers[side][x][y]->rotating = true;
       }
     }
   }
 
-  // Copy everything from the tmp array and delete allocated memory
-  for(int sideNum = 0; sideNum < 6; ++sideNum)
-  {
-    for(unsigned int x = 0; x < cubiesPerEdge; ++x)
-    {
-      for(unsigned int y = 0; y < cubiesPerEdge; ++y)
-      {
-        stickers[sideNum][x][y] = tmp[sideNum][x][y];
-      }
-      delete[] tmp[sideNum][x];
-    }
-    delete[] tmp[sideNum];
-  }
+  Sticker ****tmp = stickers;
+  stickers = tmpStickers;
+  tmpStickers = tmp;
 }
