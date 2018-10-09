@@ -1,5 +1,6 @@
 #include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
+#include <GL/glu.h>
 
 #include "cube.h"
 #include "display.h"
