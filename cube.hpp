@@ -44,6 +44,7 @@ public:
     friend class Cube;
   };
 private:
+
   float colors[6][3] =
   {
     {1.00f, 1.00f, 1.00f}, // White
@@ -54,19 +55,23 @@ private:
     {0.00f, 0.00f, 1.00f}  // Blue
   };
 
+  size_t cubiesPerEdge;
   float rotateAngle;     // The current angle of rotation (0-90)
   short rotateAxis;      // The axis we are rotating around
   sticker ***stickers[6]; // A 3D array of stickers
 
+  void Cleanup();
+  void Init();
+
 public:
-  Cube(unsigned int cubies_per_edge = 3);
+  Cube(size_t cubiesPerEdge = 3);
   ~Cube();
 
+  void Resize(size_t cubiesPerEdge);
   void Draw(float deltaTime);
-  void Scramble(unsigned int num_twists = 20);
+  size_t GetSize();
+  void Scramble(unsigned int numTwists = 20);
   void Twist(unsigned int layer, short axis);
-
-  const unsigned int CUBIES_PER_EDGE;
 
   friend class sticker;
 };

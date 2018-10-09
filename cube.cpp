@@ -27,32 +27,48 @@ Cube::twistInfo::twistInfo(unsigned int initLayer, short initAxis)
 Cube::sticker::sticker(short side_num)
              : color(side_num), rotating(false) {}
 
-Cube::Cube(unsigned int cubiesPerEdge) : rotateAngle(0.f), rotateAxis(AXIS_UNDEFINED), CUBIES_PER_EDGE(cubiesPerEdge)
+Cube::Cube(size_t cubiesPerEdge) : cubiesPerEdge(cubiesPerEdge)
 {
-  // Seed the random number generator
-  srand(time(NULL));
+  Init();
+}
+
+void Cube::Init()
+{
+  rotateAngle = 0.f;
+  rotateAxis = AXIS_UNDEFINED;
 
   // Create/initialize all the stickers
   for(int sideNum = 0; sideNum < 6; sideNum++)
   {
-    stickers[sideNum] = new sticker **[CUBIES_PER_EDGE];
-    for(unsigned int x = 0; x < CUBIES_PER_EDGE; x++)
+    stickers[sideNum] = new sticker **[cubiesPerEdge];
+    for(unsigned int x = 0; x < cubiesPerEdge; x++)
     {
-      stickers[sideNum][x] = new sticker *[CUBIES_PER_EDGE];
-      for(unsigned int y = 0; y < CUBIES_PER_EDGE; y++)
+      stickers[sideNum][x] = new sticker *[cubiesPerEdge];
+      for(unsigned int y = 0; y < cubiesPerEdge; y++)
         stickers[sideNum][x][y] = new sticker(sideNum);
     }
   }
 }
 
-// Delete the memory we allocated for the stickers
 Cube::~Cube()
+{
+  Cleanup();
+}
+
+void Cube::Resize(size_t cubiesPerEdge)
+{
+  Cleanup();
+  this->cubiesPerEdge = cubiesPerEdge;
+  Init();
+}
+
+void Cube::Cleanup()
 {
   for(int sideNum = 0; sideNum < 6; sideNum++)
   {
-    for(unsigned int x = 0; x < CUBIES_PER_EDGE; x++)
+    for(unsigned int x = 0; x < cubiesPerEdge; x++)
     {
-      for(unsigned int y = 0; y < CUBIES_PER_EDGE; y++)
+      for(unsigned int y = 0; y < cubiesPerEdge; y++)
         delete stickers[sideNum][x][y];
       delete[] stickers[sideNum][x];
     }
@@ -77,8 +93,8 @@ void Cube::Draw(float deltaTime)
 
   // Loop through every cubie (piece)
   for(int sideNum = 0; sideNum < 6; sideNum++)
-    for(unsigned int x = 0; x < CUBIES_PER_EDGE; x++)
-      for(unsigned int y = 0; y < CUBIES_PER_EDGE; y++)
+    for(unsigned int x = 0; x < cubiesPerEdge; x++)
+      for(unsigned int y = 0; y < cubiesPerEdge; y++)
       {
         glPushMatrix();
 
@@ -138,9 +154,9 @@ void Cube::Draw(float deltaTime)
           }
 
           // Move away from the center of the cube
-          glTranslatef((CUBIES_PER_EDGE-1.f)/-2.f*(STICKER_WIDTH+STICKER_SPACING)+x*(STICKER_WIDTH+STICKER_SPACING),
-                       -((CUBIES_PER_EDGE-1.f)/-2.f*(STICKER_WIDTH+STICKER_SPACING)+y*(STICKER_WIDTH+STICKER_SPACING)),
-                       CUBIES_PER_EDGE/2.f*STICKER_WIDTH+(CUBIES_PER_EDGE/2.f+0.5f)*STICKER_SPACING);
+          glTranslatef((cubiesPerEdge-1.f)/-2.f*(STICKER_WIDTH+STICKER_SPACING)+x*(STICKER_WIDTH+STICKER_SPACING),
+                       -((cubiesPerEdge-1.f)/-2.f*(STICKER_WIDTH+STICKER_SPACING)+y*(STICKER_WIDTH+STICKER_SPACING)),
+                       cubiesPerEdge/2.f*STICKER_WIDTH+(cubiesPerEdge/2.f+0.5f)*STICKER_SPACING);
 
           // Draw the sticker
           glColor3f(colors[stickers[sideNum][x][y]->color][0], colors[stickers[sideNum][x][y]->color][1], colors[stickers[sideNum][x][y]->color][2]);
@@ -157,18 +173,23 @@ void Cube::Draw(float deltaTime)
   }
 }
 
+size_t Cube::GetSize()
+{
+  return cubiesPerEdge;
+}
+
 // Scramble the Cube
 void Cube::Scramble(unsigned int numTwists)
 {
   for(unsigned int i = 0; i < numTwists; i++)
-    Twist(randNum(0, CUBIES_PER_EDGE-1), randNum(AXIS_X, AXIS_Z));
+    Twist(randNum(0, cubiesPerEdge-1), randNum(AXIS_X, AXIS_Z));
 }
 
 // Twist a single layer of the rubik's Cube along a given axis
 void Cube::Twist(unsigned int layer, short axis)
 {
   // We can't twist a layer that doesn't exist
-  if(layer >= CUBIES_PER_EDGE)
+  if(layer >= cubiesPerEdge)
     return;
 
   // If we are in the middle of rotating, add this twist to the queue
@@ -183,11 +204,11 @@ void Cube::Twist(unsigned int layer, short axis)
   sticker ***tmp[6];
   for(int sideNum = 0; sideNum < 6; sideNum++)
   {
-    tmp[sideNum] = new sticker **[CUBIES_PER_EDGE];
-    for(unsigned int x = 0; x < CUBIES_PER_EDGE; x++)
+    tmp[sideNum] = new sticker **[cubiesPerEdge];
+    for(unsigned int x = 0; x < cubiesPerEdge; x++)
     {
-      tmp[sideNum][x] = new sticker *[CUBIES_PER_EDGE];
-      for(unsigned int y = 0; y < CUBIES_PER_EDGE; y++)
+      tmp[sideNum][x] = new sticker *[cubiesPerEdge];
+      for(unsigned int y = 0; y < cubiesPerEdge; y++)
         // Initialize it to our existing sticker array
         tmp[sideNum][x][y] = stickers[sideNum][x][y];
     }
@@ -209,22 +230,22 @@ void Cube::Twist(unsigned int layer, short axis)
   {
     // Rotate a layer around x-axis
     case AXIS_X:
-      side = ((layer == 0) ? SIDE_LEFT : ((layer == (CUBIES_PER_EDGE - 1)) ? SIDE_RIGHT : -1));
+      side = ((layer == 0) ? SIDE_LEFT : ((layer == (cubiesPerEdge - 1)) ? SIDE_RIGHT : -1));
 
-      for(unsigned int y = 0; y < CUBIES_PER_EDGE; y++)
+      for(unsigned int y = 0; y < cubiesPerEdge; y++)
       {
         if(direction == DIR_CLOCKWISE)
         {
           tmp[SIDE_FRONT][layer][y] = stickers[SIDE_BOTTOM][layer][y];
-          tmp[SIDE_BOTTOM][layer][y] = stickers[SIDE_BACK][CUBIES_PER_EDGE-1-layer][CUBIES_PER_EDGE-1-y];
-          tmp[SIDE_BACK][CUBIES_PER_EDGE-1-layer][y] = stickers[SIDE_TOP][layer][CUBIES_PER_EDGE-1-y];
+          tmp[SIDE_BOTTOM][layer][y] = stickers[SIDE_BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
+          tmp[SIDE_BACK][cubiesPerEdge-1-layer][y] = stickers[SIDE_TOP][layer][cubiesPerEdge-1-y];
           tmp[SIDE_TOP][layer][y] = stickers[SIDE_FRONT][layer][y];
         }
         else
         {
           tmp[SIDE_FRONT][layer][y] = stickers[SIDE_TOP][layer][y];
-          tmp[SIDE_TOP][layer][y] = stickers[SIDE_BACK][CUBIES_PER_EDGE-1-layer][CUBIES_PER_EDGE-1-y];
-          tmp[SIDE_BACK][CUBIES_PER_EDGE-1-layer][y] = stickers[SIDE_BOTTOM][layer][CUBIES_PER_EDGE-1-y];
+          tmp[SIDE_TOP][layer][y] = stickers[SIDE_BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
+          tmp[SIDE_BACK][cubiesPerEdge-1-layer][y] = stickers[SIDE_BOTTOM][layer][cubiesPerEdge-1-y];
           tmp[SIDE_BOTTOM][layer][y] = stickers[SIDE_FRONT][layer][y];
         }
 
@@ -232,15 +253,15 @@ void Cube::Twist(unsigned int layer, short axis)
         tmp[SIDE_FRONT][layer][y]->rotating = true;
         tmp[SIDE_TOP][layer][y]->rotating = true;
         tmp[SIDE_BOTTOM][layer][y]->rotating = true;
-        tmp[SIDE_BACK][CUBIES_PER_EDGE-1-layer][y]->rotating = true;
+        tmp[SIDE_BACK][cubiesPerEdge-1-layer][y]->rotating = true;
       }
       break;
 
     // Rotate a layer around the y-axis
     case AXIS_Y:
-      side = ((layer == 0) ? SIDE_TOP : ((layer == (CUBIES_PER_EDGE - 1)) ? SIDE_BOTTOM : -1));
+      side = ((layer == 0) ? SIDE_TOP : ((layer == (cubiesPerEdge - 1)) ? SIDE_BOTTOM : -1));
 
-      for(unsigned int x = 0; x < CUBIES_PER_EDGE; x++)
+      for(unsigned int x = 0; x < cubiesPerEdge; x++)
       {
         if(direction == DIR_CLOCKWISE)
         {
@@ -268,30 +289,30 @@ void Cube::Twist(unsigned int layer, short axis)
 
     // Rotate a layer around the z-axis
     case AXIS_Z:
-      side = ((layer == 0) ? SIDE_BACK : ((layer == (CUBIES_PER_EDGE - 1)) ? SIDE_FRONT : -1));
+      side = ((layer == 0) ? SIDE_BACK : ((layer == (cubiesPerEdge - 1)) ? SIDE_FRONT : -1));
 
-      for(unsigned int y = 0; y < CUBIES_PER_EDGE; y++)
+      for(unsigned int y = 0; y < cubiesPerEdge; y++)
       {
         if(direction == DIR_CLOCKWISE)
         {
-          tmp[SIDE_LEFT][layer][y] = stickers[SIDE_BOTTOM][y][CUBIES_PER_EDGE-1-layer];
-          tmp[SIDE_BOTTOM][y][CUBIES_PER_EDGE-1-layer] = stickers[SIDE_RIGHT][CUBIES_PER_EDGE-1-layer][CUBIES_PER_EDGE-1-y];
-          tmp[SIDE_RIGHT][CUBIES_PER_EDGE-1-layer][y] = stickers[SIDE_TOP][y][layer];
-          tmp[SIDE_TOP][y][layer] = stickers[SIDE_LEFT][layer][CUBIES_PER_EDGE-1-y];
+          tmp[SIDE_LEFT][layer][y] = stickers[SIDE_BOTTOM][y][cubiesPerEdge-1-layer];
+          tmp[SIDE_BOTTOM][y][cubiesPerEdge-1-layer] = stickers[SIDE_RIGHT][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
+          tmp[SIDE_RIGHT][cubiesPerEdge-1-layer][y] = stickers[SIDE_TOP][y][layer];
+          tmp[SIDE_TOP][y][layer] = stickers[SIDE_LEFT][layer][cubiesPerEdge-1-y];
         }
         else
         {
-          tmp[SIDE_LEFT][layer][y] = stickers[SIDE_TOP][CUBIES_PER_EDGE-1-y][layer];
-          tmp[SIDE_TOP][y][layer] = stickers[SIDE_RIGHT][CUBIES_PER_EDGE-1-layer][y];
-          tmp[SIDE_RIGHT][CUBIES_PER_EDGE-1-layer][y] = stickers[SIDE_BOTTOM][CUBIES_PER_EDGE-1-y][CUBIES_PER_EDGE-1-layer];
-          tmp[SIDE_BOTTOM][y][CUBIES_PER_EDGE-1-layer] = stickers[SIDE_LEFT][layer][y];
+          tmp[SIDE_LEFT][layer][y] = stickers[SIDE_TOP][cubiesPerEdge-1-y][layer];
+          tmp[SIDE_TOP][y][layer] = stickers[SIDE_RIGHT][cubiesPerEdge-1-layer][y];
+          tmp[SIDE_RIGHT][cubiesPerEdge-1-layer][y] = stickers[SIDE_BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer];
+          tmp[SIDE_BOTTOM][y][cubiesPerEdge-1-layer] = stickers[SIDE_LEFT][layer][y];
         }
 
         // Start rotating the stickers
         tmp[SIDE_LEFT][layer][y]->rotating = true;
         tmp[SIDE_TOP][y][layer]->rotating = true;
-        tmp[SIDE_RIGHT][CUBIES_PER_EDGE-1-layer][y]->rotating = true;
-        tmp[SIDE_BOTTOM][y][CUBIES_PER_EDGE-1-layer]->rotating = true;
+        tmp[SIDE_RIGHT][cubiesPerEdge-1-layer][y]->rotating = true;
+        tmp[SIDE_BOTTOM][y][cubiesPerEdge-1-layer]->rotating = true;
       }
       break;
   }
@@ -301,13 +322,13 @@ void Cube::Twist(unsigned int layer, short axis)
   {
     if(side == SIDE_BACK || side == SIDE_LEFT || side == SIDE_BOTTOM)
       direction = !direction;
-    for(unsigned int x = 0; x < CUBIES_PER_EDGE; x++)
-      for(unsigned int y = 0; y < CUBIES_PER_EDGE; y++)
+    for(unsigned int x = 0; x < cubiesPerEdge; x++)
+      for(unsigned int y = 0; y < cubiesPerEdge; y++)
       {
         if(direction == DIR_CLOCKWISE)
-          tmp[side][x][y] = stickers[side][y][CUBIES_PER_EDGE-1-x];
+          tmp[side][x][y] = stickers[side][y][cubiesPerEdge-1-x];
         else
-          tmp[side][x][y] = stickers[side][CUBIES_PER_EDGE-1-y][x];
+          tmp[side][x][y] = stickers[side][cubiesPerEdge-1-y][x];
         tmp[side][x][y]->rotating = true;
       }
   }
@@ -315,9 +336,9 @@ void Cube::Twist(unsigned int layer, short axis)
   // Copy everything from the tmp array and delete allocated memory
   for(int sideNum = 0; sideNum < 6; sideNum++)
   {
-    for(unsigned int x = 0; x < CUBIES_PER_EDGE; x++)
+    for(unsigned int x = 0; x < cubiesPerEdge; x++)
     {
-      for(unsigned int y = 0; y < CUBIES_PER_EDGE; y++)
+      for(unsigned int y = 0; y < cubiesPerEdge; y++)
         stickers[sideNum][x][y] = tmp[sideNum][x][y];
       delete[] tmp[sideNum][x];
     }
