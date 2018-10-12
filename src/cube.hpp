@@ -49,8 +49,8 @@ class Cube
   size_t cubiesPerEdge;
   float rotateAngle;
   short rotateAxis;
-  Sticker ****stickers;
-  Sticker ****tmpStickers;
+  Sticker ***stickers[6];
+  Sticker ***tmpStickers[6];
   std::queue<TwistInfo> twistQueue;
 
   void cleanup();

@@ -61,8 +61,6 @@ void Cube::cleanup()
     delete[] stickers[sideNum];
     delete[] tmpStickers[sideNum];
   }
-  delete[] stickers;
-  delete[] tmpStickers;
 }
 
 void Cube::draw(float deltaTime)
@@ -174,8 +172,6 @@ void Cube::init()
   rotateAxis = Axis::UNDEFINED;
 
   // Create/initialize all the stickers
-  stickers = new Sticker ***[6];
-  tmpStickers = new Sticker ***[6];
   for(int sideNum = 0; sideNum < 6; ++sideNum)
   {
     stickers[sideNum] = new Sticker **[cubiesPerEdge];
@@ -248,24 +244,24 @@ void Cube::twist(unsigned int layer, short axis)
       {
         if(direction == Direction::CLOCKWISE)
         {
-          *tmpStickers[Side::FRONT][layer][y] = *stickers[Side::BOTTOM][layer][y];
-          *tmpStickers[Side::BOTTOM][layer][y] = *stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
-          *tmpStickers[Side::BACK][cubiesPerEdge-1-layer][y] = *stickers[Side::TOP][layer][cubiesPerEdge-1-y];
-          *tmpStickers[Side::TOP][layer][y] = *stickers[Side::FRONT][layer][y];
+          *stickers[Side::FRONT][layer][y] = *tmpStickers[Side::BOTTOM][layer][y];
+          *stickers[Side::BOTTOM][layer][y] = *tmpStickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
+          *stickers[Side::BACK][cubiesPerEdge-1-layer][y] = *tmpStickers[Side::TOP][layer][cubiesPerEdge-1-y];
+          *stickers[Side::TOP][layer][y] = *tmpStickers[Side::FRONT][layer][y];
         }
         else
         {
-          *tmpStickers[Side::FRONT][layer][y] = *stickers[Side::TOP][layer][y];
-          *tmpStickers[Side::TOP][layer][y] = *stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
-          *tmpStickers[Side::BACK][cubiesPerEdge-1-layer][y] = *stickers[Side::BOTTOM][layer][cubiesPerEdge-1-y];
-          *tmpStickers[Side::BOTTOM][layer][y] = *stickers[Side::FRONT][layer][y];
+          *stickers[Side::FRONT][layer][y] = *tmpStickers[Side::TOP][layer][y];
+          *stickers[Side::TOP][layer][y] = *tmpStickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
+          *stickers[Side::BACK][cubiesPerEdge-1-layer][y] = *tmpStickers[Side::BOTTOM][layer][cubiesPerEdge-1-y];
+          *stickers[Side::BOTTOM][layer][y] = *tmpStickers[Side::FRONT][layer][y];
         }
 
         // Start rotating the stickers
-        tmpStickers[Side::FRONT][layer][y]->rotating = true;
-        tmpStickers[Side::TOP][layer][y]->rotating = true;
-        tmpStickers[Side::BOTTOM][layer][y]->rotating = true;
-        tmpStickers[Side::BACK][cubiesPerEdge-1-layer][y]->rotating = true;
+        stickers[Side::FRONT][layer][y]->rotating = true;
+        stickers[Side::TOP][layer][y]->rotating = true;
+        stickers[Side::BOTTOM][layer][y]->rotating = true;
+        stickers[Side::BACK][cubiesPerEdge-1-layer][y]->rotating = true;
       }
       break;
 
@@ -277,25 +273,25 @@ void Cube::twist(unsigned int layer, short axis)
       {
         if(direction == Direction::CLOCKWISE)
         {
-          *tmpStickers[Side::FRONT][x][layer] = *stickers[Side::RIGHT][x][layer];
-          *tmpStickers[Side::RIGHT][x][layer] = *stickers[Side::BACK][x][layer];
-          *tmpStickers[Side::BACK][x][layer] = *stickers[Side::LEFT][x][layer];
-          *tmpStickers[Side::LEFT][x][layer] = *stickers[Side::FRONT][x][layer];
+          *stickers[Side::FRONT][x][layer] = *tmpStickers[Side::RIGHT][x][layer];
+          *stickers[Side::RIGHT][x][layer] = *tmpStickers[Side::BACK][x][layer];
+          *stickers[Side::BACK][x][layer] = *tmpStickers[Side::LEFT][x][layer];
+          *stickers[Side::LEFT][x][layer] = *tmpStickers[Side::FRONT][x][layer];
 
         }
         else
         {
-          *tmpStickers[Side::RIGHT][x][layer] = *stickers[Side::FRONT][x][layer];
-          *tmpStickers[Side::BACK][x][layer] = *stickers[Side::RIGHT][x][layer];
-          *tmpStickers[Side::LEFT][x][layer] = *stickers[Side::BACK][x][layer];
-          *tmpStickers[Side::FRONT][x][layer] = *stickers[Side::LEFT][x][layer];
+          *stickers[Side::RIGHT][x][layer] = *tmpStickers[Side::FRONT][x][layer];
+          *stickers[Side::BACK][x][layer] = *tmpStickers[Side::RIGHT][x][layer];
+          *stickers[Side::LEFT][x][layer] = *tmpStickers[Side::BACK][x][layer];
+          *stickers[Side::FRONT][x][layer] = *tmpStickers[Side::LEFT][x][layer];
         }
 
         // Start rotating the stickers
-        tmpStickers[Side::FRONT][x][layer]->rotating = true;
-        tmpStickers[Side::RIGHT][x][layer]->rotating = true;
-        tmpStickers[Side::BACK][x][layer]->rotating = true;
-        tmpStickers[Side::LEFT][x][layer]->rotating = true;
+        stickers[Side::FRONT][x][layer]->rotating = true;
+        stickers[Side::RIGHT][x][layer]->rotating = true;
+        stickers[Side::BACK][x][layer]->rotating = true;
+        stickers[Side::LEFT][x][layer]->rotating = true;
       }
       break;
 
@@ -307,24 +303,24 @@ void Cube::twist(unsigned int layer, short axis)
       {
         if(direction == Direction::CLOCKWISE)
         {
-          *tmpStickers[Side::LEFT][layer][y] = *stickers[Side::BOTTOM][y][cubiesPerEdge-1-layer];
-          *tmpStickers[Side::BOTTOM][y][cubiesPerEdge-1-layer] = *stickers[Side::RIGHT][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
-          *tmpStickers[Side::RIGHT][cubiesPerEdge-1-layer][y] = *stickers[Side::TOP][y][layer];
-          *tmpStickers[Side::TOP][y][layer] = *stickers[Side::LEFT][layer][cubiesPerEdge-1-y];
+          *stickers[Side::LEFT][layer][y] = *tmpStickers[Side::BOTTOM][y][cubiesPerEdge-1-layer];
+          *stickers[Side::BOTTOM][y][cubiesPerEdge-1-layer] = *tmpStickers[Side::RIGHT][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
+          *stickers[Side::RIGHT][cubiesPerEdge-1-layer][y] = *tmpStickers[Side::TOP][y][layer];
+          *stickers[Side::TOP][y][layer] = *tmpStickers[Side::LEFT][layer][cubiesPerEdge-1-y];
         }
         else
         {
-          *tmpStickers[Side::LEFT][layer][y] = *stickers[Side::TOP][cubiesPerEdge-1-y][layer];
-          *tmpStickers[Side::TOP][y][layer] = *stickers[Side::RIGHT][cubiesPerEdge-1-layer][y];
-          *tmpStickers[Side::RIGHT][cubiesPerEdge-1-layer][y] = *stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer];
-          *tmpStickers[Side::BOTTOM][y][cubiesPerEdge-1-layer] = *stickers[Side::LEFT][layer][y];
+          *stickers[Side::LEFT][layer][y] = *tmpStickers[Side::TOP][cubiesPerEdge-1-y][layer];
+          *stickers[Side::TOP][y][layer] = *tmpStickers[Side::RIGHT][cubiesPerEdge-1-layer][y];
+          *stickers[Side::RIGHT][cubiesPerEdge-1-layer][y] = *tmpStickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer];
+          *stickers[Side::BOTTOM][y][cubiesPerEdge-1-layer] = *tmpStickers[Side::LEFT][layer][y];
         }
 
         // Start rotating the stickers
-        tmpStickers[Side::LEFT][layer][y]->rotating = true;
-        tmpStickers[Side::TOP][y][layer]->rotating = true;
-        tmpStickers[Side::RIGHT][cubiesPerEdge-1-layer][y]->rotating = true;
-        tmpStickers[Side::BOTTOM][y][cubiesPerEdge-1-layer]->rotating = true;
+        stickers[Side::LEFT][layer][y]->rotating = true;
+        stickers[Side::TOP][y][layer]->rotating = true;
+        stickers[Side::RIGHT][cubiesPerEdge-1-layer][y]->rotating = true;
+        stickers[Side::BOTTOM][y][cubiesPerEdge-1-layer]->rotating = true;
       }
       break;
   }
@@ -342,18 +338,14 @@ void Cube::twist(unsigned int layer, short axis)
       {
         if(direction == Direction::CLOCKWISE)
         {
-          *tmpStickers[side][x][y] = *stickers[side][y][cubiesPerEdge-1-x];
+          *stickers[side][x][y] = *tmpStickers[side][y][cubiesPerEdge-1-x];
         }
         else
         {
-          *tmpStickers[side][x][y] = *stickers[side][cubiesPerEdge-1-y][x];
+          *stickers[side][x][y] = *tmpStickers[side][cubiesPerEdge-1-y][x];
         }
-        tmpStickers[side][x][y]->rotating = true;
+        stickers[side][x][y]->rotating = true;
       }
     }
   }
-
-  Sticker ****tmp = stickers;
-  stickers = tmpStickers;
-  tmpStickers = tmp;
 }
