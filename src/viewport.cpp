@@ -38,7 +38,7 @@ void Viewport::framebufferSizeCallback(GLFWwindow *, int width, int height)
   glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(45.f, static_cast<float>(width) / static_cast<float>(height), 1.f, 10000.f);
+  gluPerspective(45.f, static_cast<float>(width) / static_cast<float>(height), 1.f, 1000000.f);
 }
 
 void Viewport::resetCamera()
