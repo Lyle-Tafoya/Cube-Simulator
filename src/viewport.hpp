@@ -15,7 +15,7 @@ class Viewport
 public:
   Viewport(int width, int height);
   ~Viewport();
-  inline GLFWwindow *getWindow() { return window; }
+  inline GLFWwindow *getWindow() const { return window; }
   void adjustCamera(float xAngle, float yAngle, float zoom);
   void resetCamera();
   void resizeWindow(int width, int height);

@@ -70,7 +70,7 @@ public:
 
   void resize(size_t cubiesPerEdge);
   void draw(float deltaTime);
-  inline size_t getSize() { return cubiesPerEdge; }
+  inline size_t getSize() const { return cubiesPerEdge; }
   void scramble(unsigned int numTwists = 20);
   void twist(unsigned int layer, short axis);
 
