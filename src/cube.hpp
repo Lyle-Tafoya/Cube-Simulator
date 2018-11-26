@@ -29,13 +29,6 @@ class Cube
     TwistInfo(unsigned int layer, short axis);
   };
 
-  struct Sticker
-  {
-    unsigned char color;
-    bool rotating;
-    Sticker(unsigned char side);
-  };
-
   float colors[6][3] =
   {
     {1.00f, 1.00f, 1.00f}, // White
@@ -49,8 +42,7 @@ class Cube
   size_t cubiesPerEdge;
   float rotateAngle;
   short rotateAxis;
-  Sticker ***stickers[6];
-  Sticker ***tmpStickers[6];
+  unsigned char **stickers[6];
   std::queue<TwistInfo> twistQueue;
 
   void cleanup();

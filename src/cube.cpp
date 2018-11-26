@@ -7,6 +7,9 @@
 #define STICKER_WIDTH     50.0f
 #define STICKER_SPACING   (STICKER_WIDTH / 20.f)
 
+#define STICKER_UNROTATE_BITS 127
+#define STICKER_ROTATE_BIT    128
+
 // Generate a random number between from and to
 int randNum(int from, int to)
 {
@@ -25,7 +28,6 @@ inline void drawRect(float height, float aspectRatio = 1.f)
 }
 
 Cube::TwistInfo::TwistInfo(unsigned int layer, short axis) : axis(axis), layer(layer) {}
-Cube::Sticker::Sticker(unsigned char side) : color(side), rotating(false) {}
 
 Cube::Cube(size_t cubiesPerEdge) : cubiesPerEdge(cubiesPerEdge)
 {
@@ -51,10 +53,6 @@ void Cube::cleanup()
   {
     for(unsigned int x = 0; x < cubiesPerEdge; ++x)
     {
-      for(unsigned int y = 0; y < cubiesPerEdge; ++y)
-      {
-        delete stickers[sideNum][x][y];
-      }
       delete[] stickers[sideNum][x];
     }
     delete[] stickers[sideNum];
@@ -85,11 +83,11 @@ void Cube::draw(float deltaTime)
         // Deal with the rotation of stickers
         if(rotateAxis == Axis::UNDEFINED)
         {
-          stickers[sideNum][x][y]->rotating = false;
+          stickers[sideNum][x][y] &= STICKER_UNROTATE_BITS;
         }
 
         // Rotate stickers if necessary
-        if(stickers[sideNum][x][y]->rotating == true)
+        if(stickers[sideNum][x][y] & STICKER_ROTATE_BIT)
         {
           switch(rotateAxis)
           {
@@ -145,7 +143,8 @@ void Cube::draw(float deltaTime)
             cubiesPerEdge/2.f*STICKER_WIDTH+(cubiesPerEdge/2.f+0.5f)*STICKER_SPACING);
 
         // Draw the sticker
-        glColor3f(colors[stickers[sideNum][x][y]->color][0], colors[stickers[sideNum][x][y]->color][1], colors[stickers[sideNum][x][y]->color][2]);
+        unsigned char stickerColor = stickers[sideNum][x][y] & STICKER_UNROTATE_BITS;
+        glColor3f(colors[stickerColor][0], colors[stickerColor][1], colors[stickerColor][2]);
         drawRect(STICKER_WIDTH);
 
         glPopMatrix();
@@ -166,17 +165,14 @@ void Cube::init()
   rotateAngle = 0.f;
   rotateAxis = Axis::UNDEFINED;
 
-  // Create/initialize all the stickers
+  // Allocate all the stickers
   for(int sideNum = 0; sideNum < 6; ++sideNum)
   {
-    stickers[sideNum] = new Sticker **[cubiesPerEdge];
+    stickers[sideNum] = new unsigned char *[cubiesPerEdge];
     for(unsigned int x = 0; x < cubiesPerEdge; ++x)
     {
-      stickers[sideNum][x] = new Sticker *[cubiesPerEdge];
-      for(unsigned int y = 0; y < cubiesPerEdge; ++y)
-      {
-        stickers[sideNum][x][y] = new Sticker(sideNum);
-      }
+      stickers[sideNum][x] = new unsigned char[cubiesPerEdge];
+      std::fill(stickers[sideNum][x], stickers[sideNum][x]+cubiesPerEdge, static_cast<unsigned char>(sideNum));
     }
   }
 }
@@ -212,7 +208,7 @@ void Cube::twist(unsigned int layer, short axis)
     axis = -axis;
   }
 
-  Sticker *tmp;
+  unsigned char tmp;
   int side;
   switch(axis)
   {
@@ -238,10 +234,10 @@ void Cube::twist(unsigned int layer, short axis)
           stickers[Side::FRONT][layer][y] = tmp;
         }
 
-        stickers[Side::FRONT][layer][y]->rotating = true;
-        stickers[Side::BOTTOM][layer][y]->rotating = true;
-        stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y]->rotating = true;
-        stickers[Side::TOP][layer][y]->rotating = true;
+        stickers[Side::FRONT][layer][y] |= STICKER_ROTATE_BIT;
+        stickers[Side::BOTTOM][layer][y] |= STICKER_ROTATE_BIT;
+        stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y] |= STICKER_ROTATE_BIT;
+        stickers[Side::TOP][layer][y] |= STICKER_ROTATE_BIT;
       }
       break;
 
@@ -268,10 +264,10 @@ void Cube::twist(unsigned int layer, short axis)
           stickers[Side::FRONT][x][layer] = tmp;
         }
 
-        stickers[Side::FRONT][x][layer]->rotating = true;
-        stickers[Side::RIGHT][x][layer]->rotating = true;
-        stickers[Side::BACK][x][layer]->rotating = true;
-        stickers[Side::LEFT][x][layer]->rotating = true;
+        stickers[Side::FRONT][x][layer] |= STICKER_ROTATE_BIT;
+        stickers[Side::RIGHT][x][layer] |= STICKER_ROTATE_BIT;
+        stickers[Side::BACK][x][layer] |= STICKER_ROTATE_BIT;
+        stickers[Side::LEFT][x][layer] |= STICKER_ROTATE_BIT;
       }
       break;
 
@@ -297,10 +293,10 @@ void Cube::twist(unsigned int layer, short axis)
           stickers[Side::LEFT][layer][cubiesPerEdge-1-y] = tmp;
         }
 
-        stickers[Side::LEFT][layer][cubiesPerEdge-1-y]->rotating = true;
-        stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer]->rotating = true;
-        stickers[Side::RIGHT][cubiesPerEdge-1-layer][y]->rotating = true;
-        stickers[Side::TOP][y][layer]->rotating = true;
+        stickers[Side::LEFT][layer][cubiesPerEdge-1-y] |= STICKER_ROTATE_BIT;
+        stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer] |= STICKER_ROTATE_BIT;
+        stickers[Side::RIGHT][cubiesPerEdge-1-layer][y] |= STICKER_ROTATE_BIT;
+        stickers[Side::TOP][y][layer] |= STICKER_ROTATE_BIT;
       }
       break;
   }
@@ -312,69 +308,30 @@ void Cube::twist(unsigned int layer, short axis)
     direction = !direction;
   }
 
-  // This algorithm spirals in towards the center, operating on 4 stickers at a time with a single temp
-  unsigned char dir = 1;
-  size_t numIterations = static_cast<int>(ceil(cubiesPerEdge*cubiesPerEdge/4.l));
-  for(size_t x = 0, y = 0, xLimit = cubiesPerEdge-2-x, yLimit = cubiesPerEdge-2-y, i = 0; i < numIterations; ++i)
+  for(size_t depth = 0; depth < (cubiesPerEdge+1)/2; ++depth)
   {
-    tmp = stickers[side][x][y];
-    for(size_t i = 0, xPos = x, yPos = y; i < 3; ++i)
+    for(size_t pos = 0; pos+depth < cubiesPerEdge-1-depth; ++pos)
     {
       if(direction == Direction::CLOCKWISE)
       {
-        stickers[side][xPos][yPos] = stickers[side][yPos][cubiesPerEdge-1-xPos];
-        size_t tmpPos = xPos;
-        xPos = yPos;
-        yPos = cubiesPerEdge-1-tmpPos;
+        tmp = stickers[side][depth+pos][depth];
+        stickers[side][depth+pos][depth] = stickers[side][depth][cubiesPerEdge-1-depth-pos];
+        stickers[side][depth][cubiesPerEdge-1-depth-pos] = stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth];
+        stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth] = stickers[side][cubiesPerEdge-1-depth][depth+pos];
+        stickers[side][cubiesPerEdge-1-depth][depth+pos] = tmp;
       }
       else
       {
-        stickers[side][xPos][yPos] = stickers[side][cubiesPerEdge-1-yPos][xPos];
-        size_t tmpPos = xPos;
-        xPos = cubiesPerEdge-1-yPos;
-        yPos = tmpPos;
+        tmp = stickers[side][depth+pos][depth];
+        stickers[side][depth+pos][depth] = stickers[side][cubiesPerEdge-1-depth][depth+pos];
+        stickers[side][cubiesPerEdge-1-depth][depth+pos] = stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth];
+        stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth] = stickers[side][depth][cubiesPerEdge-1-depth-pos];;
+        stickers[side][depth][cubiesPerEdge-1-depth-pos] = tmp;
       }
-      stickers[side][xPos][yPos]->rotating = true;
-    }
-    tmp->rotating = true;
-    if(direction == Direction::CLOCKWISE)
-    {
-      stickers[side][cubiesPerEdge-1-y][x] = tmp;
-    }
-    else
-    {
-      stickers[side][y][cubiesPerEdge-1-x] = tmp;
-    }
-    switch(dir % 4)
-    {
-      case 0:
-        if(--y == yLimit)
-        {
-          ++dir;
-          xLimit = cubiesPerEdge-2-x;
-        }
-        break;
-      case 1:
-        if(++x == xLimit)
-        {
-          ++dir;
-          yLimit = cubiesPerEdge-2-y;
-        }
-        break;
-      case 2:
-        if(++y == yLimit)
-        {
-          ++dir;
-          xLimit = cubiesPerEdge-1-x;
-        }
-        break;
-      case 3:
-        if(--x == yLimit)
-        {
-          ++dir;
-          yLimit = cubiesPerEdge-1-y;
-        }
-        break;
+      stickers[side][depth+pos][depth] |= STICKER_ROTATE_BIT;
+      stickers[side][depth][cubiesPerEdge-1-depth-pos] |= STICKER_ROTATE_BIT;
+      stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth] |= STICKER_ROTATE_BIT;
+      stickers[side][cubiesPerEdge-1-depth][depth+pos] |= STICKER_ROTATE_BIT;
     }
   }
 }
