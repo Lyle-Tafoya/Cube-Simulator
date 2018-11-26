@@ -47,6 +47,7 @@ class Cube
 
   void cleanup();
   void init();
+  static void rotateStickers(unsigned char &a, unsigned char &b, unsigned char &c, unsigned char &d, bool clockwise=true);
 
 public:
   enum Axis

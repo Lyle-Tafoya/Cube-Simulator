@@ -27,6 +27,18 @@ inline void drawRect(float height, float aspectRatio = 1.f)
   glEnd();
 }
 
+void Cube::rotateStickers(unsigned char &a, unsigned char &b, unsigned char &c, unsigned char &d, bool clockwise)
+{
+  unsigned char tmp = a;
+  if(clockwise) { a = b; b = c; c = d; d = tmp; }
+  else { a = d; d = c; c = b; b = tmp; }
+
+  a |= STICKER_ROTATE_BIT;
+  b |= STICKER_ROTATE_BIT;
+  c |= STICKER_ROTATE_BIT;
+  d |= STICKER_ROTATE_BIT;
+}
+
 Cube::TwistInfo::TwistInfo(unsigned int layer, short axis) : axis(axis), layer(layer) {}
 
 Cube::Cube(size_t cubiesPerEdge) : cubiesPerEdge(cubiesPerEdge)
@@ -208,7 +220,6 @@ void Cube::twist(unsigned int layer, short axis)
     axis = -axis;
   }
 
-  unsigned char tmp;
   int side;
   switch(axis)
   {
@@ -217,27 +228,13 @@ void Cube::twist(unsigned int layer, short axis)
 
       for(size_t y = 0; y < cubiesPerEdge; y++)
       {
-        if(direction == Direction::CLOCKWISE)
-        {
-          tmp = stickers[Side::FRONT][layer][y];
-          stickers[Side::FRONT][layer][y] = stickers[Side::BOTTOM][layer][y];
-          stickers[Side::BOTTOM][layer][y] = stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
-          stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y] = stickers[Side::TOP][layer][y];
-          stickers[Side::TOP][layer][y] = tmp;
-        }
-        else
-        {
-          tmp = stickers[Side::TOP][layer][y];
-          stickers[Side::TOP][layer][y] = stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y];
-          stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y] = stickers[Side::BOTTOM][layer][y];
-          stickers[Side::BOTTOM][layer][y] = stickers[Side::FRONT][layer][y];
-          stickers[Side::FRONT][layer][y] = tmp;
-        }
-
-        stickers[Side::FRONT][layer][y] |= STICKER_ROTATE_BIT;
-        stickers[Side::BOTTOM][layer][y] |= STICKER_ROTATE_BIT;
-        stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y] |= STICKER_ROTATE_BIT;
-        stickers[Side::TOP][layer][y] |= STICKER_ROTATE_BIT;
+        rotateStickers(
+            stickers[Side::FRONT][layer][y],
+            stickers[Side::TOP][layer][y],
+            stickers[Side::BACK][cubiesPerEdge-1-layer][cubiesPerEdge-1-y],
+            stickers[Side::BOTTOM][layer][y],
+            direction
+        );
       }
       break;
 
@@ -246,28 +243,13 @@ void Cube::twist(unsigned int layer, short axis)
 
       for(size_t x = 0; x < cubiesPerEdge; x++)
       {
-        if(direction == Direction::CLOCKWISE)
-        {
-          tmp = stickers[Side::FRONT][x][layer];
-          stickers[Side::FRONT][x][layer] = stickers[Side::RIGHT][x][layer];
-          stickers[Side::RIGHT][x][layer] = stickers[Side::BACK][x][layer];
-          stickers[Side::BACK][x][layer] = stickers[Side::LEFT][x][layer];
-          stickers[Side::LEFT][x][layer] = tmp;
-
-        }
-        else
-        {
-          tmp = stickers[Side::LEFT][x][layer];
-          stickers[Side::LEFT][x][layer] = stickers[Side::BACK][x][layer];
-          stickers[Side::BACK][x][layer] = stickers[Side::RIGHT][x][layer];
-          stickers[Side::RIGHT][x][layer] = stickers[Side::FRONT][x][layer];
-          stickers[Side::FRONT][x][layer] = tmp;
-        }
-
-        stickers[Side::FRONT][x][layer] |= STICKER_ROTATE_BIT;
-        stickers[Side::RIGHT][x][layer] |= STICKER_ROTATE_BIT;
-        stickers[Side::BACK][x][layer] |= STICKER_ROTATE_BIT;
-        stickers[Side::LEFT][x][layer] |= STICKER_ROTATE_BIT;
+        rotateStickers(
+          stickers[Side::LEFT][x][layer],
+          stickers[Side::BACK][x][layer],
+          stickers[Side::RIGHT][x][layer],
+          stickers[Side::FRONT][x][layer],
+          direction
+        );
       }
       break;
 
@@ -276,27 +258,13 @@ void Cube::twist(unsigned int layer, short axis)
 
       for(size_t y = 0; y < cubiesPerEdge; ++y)
       {
-        if(direction == Direction::CLOCKWISE)
-        {
-          tmp = stickers[Side::LEFT][layer][cubiesPerEdge-1-y];
-          stickers[Side::LEFT][layer][cubiesPerEdge-1-y] = stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer];
-          stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer] = stickers[Side::RIGHT][cubiesPerEdge-1-layer][y];
-          stickers[Side::RIGHT][cubiesPerEdge-1-layer][y] = stickers[Side::TOP][y][layer];
-          stickers[Side::TOP][y][layer] = tmp;
-        }
-        else
-        {
-          tmp = stickers[Side::TOP][y][layer];
-          stickers[Side::TOP][y][layer] = stickers[Side::RIGHT][cubiesPerEdge-1-layer][y];
-          stickers[Side::RIGHT][cubiesPerEdge-1-layer][y] = stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer];
-          stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer] = stickers[Side::LEFT][layer][cubiesPerEdge-1-y];
-          stickers[Side::LEFT][layer][cubiesPerEdge-1-y] = tmp;
-        }
-
-        stickers[Side::LEFT][layer][cubiesPerEdge-1-y] |= STICKER_ROTATE_BIT;
-        stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer] |= STICKER_ROTATE_BIT;
-        stickers[Side::RIGHT][cubiesPerEdge-1-layer][y] |= STICKER_ROTATE_BIT;
-        stickers[Side::TOP][y][layer] |= STICKER_ROTATE_BIT;
+        rotateStickers(
+          stickers[Side::TOP][y][layer],
+          stickers[Side::RIGHT][cubiesPerEdge-1-layer][y],
+          stickers[Side::BOTTOM][cubiesPerEdge-1-y][cubiesPerEdge-1-layer],
+          stickers[Side::LEFT][layer][cubiesPerEdge-1-y],
+          direction
+        );
       }
       break;
   }
@@ -312,26 +280,13 @@ void Cube::twist(unsigned int layer, short axis)
   {
     for(size_t pos = 0; pos+depth < cubiesPerEdge-1-depth; ++pos)
     {
-      if(direction == Direction::CLOCKWISE)
-      {
-        tmp = stickers[side][depth+pos][depth];
-        stickers[side][depth+pos][depth] = stickers[side][depth][cubiesPerEdge-1-depth-pos];
-        stickers[side][depth][cubiesPerEdge-1-depth-pos] = stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth];
-        stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth] = stickers[side][cubiesPerEdge-1-depth][depth+pos];
-        stickers[side][cubiesPerEdge-1-depth][depth+pos] = tmp;
-      }
-      else
-      {
-        tmp = stickers[side][depth+pos][depth];
-        stickers[side][depth+pos][depth] = stickers[side][cubiesPerEdge-1-depth][depth+pos];
-        stickers[side][cubiesPerEdge-1-depth][depth+pos] = stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth];
-        stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth] = stickers[side][depth][cubiesPerEdge-1-depth-pos];;
-        stickers[side][depth][cubiesPerEdge-1-depth-pos] = tmp;
-      }
-      stickers[side][depth+pos][depth] |= STICKER_ROTATE_BIT;
-      stickers[side][depth][cubiesPerEdge-1-depth-pos] |= STICKER_ROTATE_BIT;
-      stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth] |= STICKER_ROTATE_BIT;
-      stickers[side][cubiesPerEdge-1-depth][depth+pos] |= STICKER_ROTATE_BIT;
+      rotateStickers(
+        stickers[side][depth+pos][depth],
+        stickers[side][cubiesPerEdge-1-depth][depth+pos],
+        stickers[side][cubiesPerEdge-1-depth-pos][cubiesPerEdge-1-depth],
+        stickers[side][depth][cubiesPerEdge-1-depth-pos],
+        direction
+      );
     }
   }
 }
