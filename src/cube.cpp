@@ -7,7 +7,6 @@
 #define STICKER_WIDTH     50.0f
 #define STICKER_SPACING   (STICKER_WIDTH / 20.f)
 
-#define STICKER_UNROTATE_BITS 127
 #define STICKER_ROTATE_BIT    128
 
 // Generate a random number between from and to
@@ -92,10 +91,9 @@ void Cube::draw(float deltaTime)
       {
         glPushMatrix();
 
-        // Deal with the rotation of stickers
         if(rotateAxis == Axis::UNDEFINED)
         {
-          stickers[sideNum][x][y] &= STICKER_UNROTATE_BITS;
+          stickers[sideNum][x][y] &= (~STICKER_ROTATE_BIT);
         }
 
         // Rotate stickers if necessary
@@ -155,7 +153,7 @@ void Cube::draw(float deltaTime)
             cubiesPerEdge/2.f*STICKER_WIDTH+(cubiesPerEdge/2.f+0.5f)*STICKER_SPACING);
 
         // Draw the sticker
-        unsigned char stickerColor = stickers[sideNum][x][y] & STICKER_UNROTATE_BITS;
+        unsigned char stickerColor = stickers[sideNum][x][y] & (~STICKER_ROTATE_BIT);
         glColor3f(colors[stickerColor][0], colors[stickerColor][1], colors[stickerColor][2]);
         drawRect(STICKER_WIDTH);
 
