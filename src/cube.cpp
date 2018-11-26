@@ -4,10 +4,8 @@
 #include <ctime>
 #include "cube.hpp"
 
-#define STICKER_WIDTH     50.0f
-#define STICKER_SPACING   (STICKER_WIDTH / 20.f)
-
-#define STICKER_ROTATE_BIT    128
+constexpr float STICKER_WIDTH = 50.0f;
+constexpr float STICKER_SPACING = STICKER_WIDTH / 20.f;
 
 // Generate a random number between from and to
 int randNum(int from, int to)

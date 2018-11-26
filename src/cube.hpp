@@ -39,6 +39,7 @@ class Cube
     {0.00f, 0.00f, 1.00f}  // Blue
   };
 
+
   size_t cubiesPerEdge;
   float rotateAngle;
   short rotateAxis;
@@ -47,6 +48,7 @@ class Cube
 
   void cleanup();
   void init();
+  static constexpr unsigned char STICKER_ROTATE_BIT = 128;
   static void rotateStickers(unsigned char &a, unsigned char &b, unsigned char &c, unsigned char &d, bool clockwise=true);
 
 public:
