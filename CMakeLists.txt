@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 
 project(CubeSimulator)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++20")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
 set(OpenGL_GL_PREFERENCE LEGACY)

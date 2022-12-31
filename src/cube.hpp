@@ -1,6 +1,7 @@
 #ifndef CUBE_HPP_
 #define CUBE_HPP_
 
+#include <cstddef>
 #include <queue>
 
 // A NxNxN cube twisty puzzle
@@ -39,17 +40,21 @@ class Cube
     {0.00f, 0.00f, 1.00f}  // Blue
   };
 
+  struct Sticker
+  {
+    unsigned char color:3;
+    bool is_rotating:1 = false;
+  };
 
   size_t cubiesPerEdge;
   float rotateAngle;
   short rotateAxis;
-  unsigned char **stickers[6];
+  Sticker **stickers[6];
   std::queue<TwistInfo> twistQueue;
 
   void cleanup();
   void init();
-  static constexpr unsigned char STICKER_ROTATE_BIT = 128;
-  static void rotateStickers(unsigned char &a, unsigned char &b, unsigned char &c, unsigned char &d, bool clockwise=true);
+  static void rotateStickers(Sticker &a, Sticker &b, Sticker &c, Sticker &d, bool clockwise=true);
 
 public:
   enum Axis

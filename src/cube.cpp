@@ -24,16 +24,15 @@ inline void drawRect(float height, float aspectRatio = 1.f)
   glEnd();
 }
 
-void Cube::rotateStickers(unsigned char &a, unsigned char &b, unsigned char &c, unsigned char &d, bool clockwise)
+void Cube::rotateStickers(Sticker &a, Sticker &b, Sticker &c, Sticker &d, bool clockwise)
 {
-  unsigned char tmp = a;
+  a.is_rotating = true;
+  b.is_rotating = true;
+  c.is_rotating = true;
+  d.is_rotating = true;
+  Sticker tmp = a;
   if(clockwise) { a = b; b = c; c = d; d = tmp; }
   else { a = d; d = c; c = b; b = tmp; }
-
-  a |= STICKER_ROTATE_BIT;
-  b |= STICKER_ROTATE_BIT;
-  c |= STICKER_ROTATE_BIT;
-  d |= STICKER_ROTATE_BIT;
 }
 
 Cube::TwistInfo::TwistInfo(unsigned int layer, short axis) : axis(axis), layer(layer) {}
@@ -91,11 +90,11 @@ void Cube::draw(float deltaTime)
 
         if(rotateAxis == Axis::UNDEFINED)
         {
-          stickers[sideNum][x][y] &= (~STICKER_ROTATE_BIT);
+          stickers[sideNum][x][y].is_rotating = false;
         }
 
         // Rotate stickers if necessary
-        if(stickers[sideNum][x][y] & STICKER_ROTATE_BIT)
+        if(stickers[sideNum][x][y].is_rotating)
         {
           switch(rotateAxis)
           {
@@ -151,7 +150,7 @@ void Cube::draw(float deltaTime)
             cubiesPerEdge/2.f*STICKER_WIDTH+(cubiesPerEdge/2.f+0.5f)*STICKER_SPACING);
 
         // Draw the sticker
-        unsigned char stickerColor = stickers[sideNum][x][y] & (~STICKER_ROTATE_BIT);
+        unsigned char stickerColor = stickers[sideNum][x][y].color;
         glColor3f(colors[stickerColor][0], colors[stickerColor][1], colors[stickerColor][2]);
         drawRect(STICKER_WIDTH);
 
@@ -176,11 +175,14 @@ void Cube::init()
   // Allocate all the stickers
   for(int sideNum = 0; sideNum < 6; ++sideNum)
   {
-    stickers[sideNum] = new unsigned char *[cubiesPerEdge];
+    stickers[sideNum] = new Sticker *[cubiesPerEdge];
     for(unsigned int x = 0; x < cubiesPerEdge; ++x)
     {
-      stickers[sideNum][x] = new unsigned char[cubiesPerEdge];
-      std::fill(stickers[sideNum][x], stickers[sideNum][x]+cubiesPerEdge, static_cast<unsigned char>(sideNum));
+      stickers[sideNum][x] = new Sticker[cubiesPerEdge];
+      for(unsigned int y = 0; y < cubiesPerEdge; ++y)
+      {
+        stickers[sideNum][x][y].color = sideNum;
+      }
     }
   }
 }
