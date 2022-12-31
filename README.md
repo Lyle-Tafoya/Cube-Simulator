@@ -1,11 +1,13 @@
 ## Cube-Simulator
 
-An NxNxN Cube Twisty Puzzle Simulator
+An OpenGL 2.1 NxNxN Cube Twisty Puzzle Simulator
 ![ScreenShot](https://raw.githubusercontent.com/Lyle-Tafoya/Cube-Simulator/master/screenshot.jpg)
 
 #### Controls:
 
-h Rotate active top layer clockwise  
+This application uses keyboard controls and is meant to feel somewhat intuitive to speed cubers who know how to touch type with a QWERTY layout keyboard.
+
+j Rotate active top layer clockwise  
 f Rotate active top layer counter-clockwise
 
 i Rotate active right layer clockwise  
