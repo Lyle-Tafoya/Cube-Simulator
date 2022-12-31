@@ -276,6 +276,11 @@ void Cube::twist(unsigned int layer, short axis)
 
   for(size_t depth = 0; depth < (cubiesPerEdge+1)/2; ++depth)
   {
+    if(cubiesPerEdge%2 == 1 && (cubiesPerEdge+1)/2-1 == depth)
+    {
+      stickers[side][depth][depth].is_rotating = true;
+      break;
+    }
     for(size_t pos = 0; pos+depth < cubiesPerEdge-1-depth + (pos+depth)%2; ++pos)
     {
       rotateStickers(
