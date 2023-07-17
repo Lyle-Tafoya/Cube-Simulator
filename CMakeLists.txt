@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.0.0)
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 
-project(CubeSimulator)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++20")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 
-set(OpenGL_GL_PREFERENCE LEGACY)
-find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED)
+project(CubeSimulator)
 
 add_executable(CubeSimulator
   src/cube.cpp
@@ -15,5 +14,7 @@ add_executable(CubeSimulator
   src/viewport.cpp
 )
 
-target_include_directories(CubeSimulator PRIVATE ${OPENGL_INCLUDE_DIR})
-target_link_libraries(CubeSimulator ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} glfw)
+set(OpenGL_GL_PREFERENCE LEGACY)
+find_package(OpenGL REQUIRED)
+find_package(glfw3 CONFIG REQUIRED)
+target_link_libraries(CubeSimulator PRIVATE glfw OpenGL::GL OpenGL::GLU)
