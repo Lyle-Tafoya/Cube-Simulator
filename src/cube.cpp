@@ -37,7 +37,7 @@ void Cube::rotateStickers(Sticker &a, Sticker &b, Sticker &c, Sticker &d, bool c
 
 Cube::TwistInfo::TwistInfo(unsigned int layer, short axis) : axis(axis), layer(layer) {}
 
-Cube::Cube(size_t cubiesPerEdge) : cubiesPerEdge(cubiesPerEdge)
+Cube::Cube(unsigned int cubiesPerEdge) : cubiesPerEdge(cubiesPerEdge)
 {
   init();
   srand(time(NULL));
@@ -48,7 +48,7 @@ Cube::~Cube()
   cleanup();
 }
 
-void Cube::resize(size_t cubiesPerEdge)
+void Cube::resize(unsigned int cubiesPerEdge)
 {
   cleanup();
   this->cubiesPerEdge = cubiesPerEdge;
@@ -224,7 +224,7 @@ void Cube::twist(unsigned int layer, short axis)
     case Axis::X:
       side = ((layer == 0) ? Side::LEFT : ((layer == (cubiesPerEdge - 1)) ? Side::RIGHT : -1));
 
-      for(size_t y = 0; y < cubiesPerEdge; y++)
+      for(unsigned int y = 0; y < cubiesPerEdge; y++)
       {
         rotateStickers(
             stickers[Side::FRONT][layer][y],
@@ -239,7 +239,7 @@ void Cube::twist(unsigned int layer, short axis)
     case Axis::Y:
       side = ((layer == 0) ? Side::TOP : ((layer == (cubiesPerEdge - 1)) ? Side::BOTTOM : -1));
 
-      for(size_t x = 0; x < cubiesPerEdge; x++)
+      for(unsigned int x = 0; x < cubiesPerEdge; x++)
       {
         rotateStickers(
           stickers[Side::LEFT][x][layer],
@@ -254,7 +254,7 @@ void Cube::twist(unsigned int layer, short axis)
     case Axis::Z:
       side = ((layer == 0) ? Side::BACK : ((layer == (cubiesPerEdge - 1)) ? Side::FRONT : -1));
 
-      for(size_t y = 0; y < cubiesPerEdge; ++y)
+      for(unsigned int y = 0; y < cubiesPerEdge; ++y)
       {
         rotateStickers(
           stickers[Side::TOP][y][layer],
@@ -274,14 +274,14 @@ void Cube::twist(unsigned int layer, short axis)
     direction = !direction;
   }
 
-  for(size_t depth = 0; depth < (cubiesPerEdge+1)/2; ++depth)
+  for(unsigned int depth = 0; depth < (cubiesPerEdge+1)/2; ++depth)
   {
     if(cubiesPerEdge%2 == 1 && (cubiesPerEdge+1)/2-1 == depth)
     {
       stickers[side][depth][depth].is_rotating = true;
       break;
     }
-    for(size_t pos = 0; pos+depth < cubiesPerEdge-1-depth + (pos+depth)%2; ++pos)
+    for(unsigned int pos = 0; pos+depth < cubiesPerEdge-1-depth + (pos+depth)%2; ++pos)
     {
       rotateStickers(
         stickers[side][depth+pos][depth],

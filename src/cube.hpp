@@ -46,7 +46,7 @@ class Cube
     bool is_rotating:1 = false;
   };
 
-  size_t cubiesPerEdge;
+  unsigned int cubiesPerEdge;
   float rotateAngle;
   short rotateAxis;
   Sticker **stickers[6];
@@ -65,12 +65,12 @@ public:
     Z
   };
 
-  Cube(size_t cubiesPerEdge = 3);
+  Cube(unsigned int cubiesPerEdge = 3);
   ~Cube();
 
-  void resize(size_t cubiesPerEdge);
+  void resize(unsigned int cubiesPerEdge);
   void draw(float deltaTime);
-  inline size_t getSize() const { return cubiesPerEdge; }
+  inline unsigned int getSize() const { return cubiesPerEdge; }
   void scramble(unsigned int numTwists = 20);
   void twist(unsigned int layer, short axis);
 };
