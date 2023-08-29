@@ -73,8 +73,6 @@ public:
   inline size_t getSize() const { return cubiesPerEdge; }
   void scramble(unsigned int numTwists = 20);
   void twist(unsigned int layer, short axis);
-
-  friend class Sticker;
 };
 
 #endif
