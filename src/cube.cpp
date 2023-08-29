@@ -1,7 +1,5 @@
 #include <GLFW/glfw3.h>
-#include <cmath>
-#include <cstdlib>
-#include <ctime>
+#include <random>
 #include "cube.hpp"
 
 constexpr float STICKER_WIDTH = 50.0f;
@@ -10,7 +8,11 @@ constexpr float STICKER_SPACING = STICKER_WIDTH / 20.f;
 // Generate a random number between from and to
 int randNum(int from, int to)
 {
-  return (rand() % (to - from + 1)) + from;
+  static std::random_device device;
+  static std::mt19937 generator(device());
+  std::uniform_int_distribution distribution(from, to);
+
+  return distribution(generator);
 }
 
 // Draw a rectangle
@@ -40,7 +42,6 @@ Cube::TwistInfo::TwistInfo(unsigned int layer, short axis) : axis(axis), layer(l
 Cube::Cube(unsigned int cubiesPerEdge) : cubiesPerEdge(cubiesPerEdge)
 {
   init();
-  srand(time(NULL));
 }
 
 Cube::~Cube()
