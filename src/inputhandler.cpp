@@ -5,7 +5,7 @@
 Cube *InputHandler::cube = nullptr;
 GLFWwindow *InputHandler::glfwWindow = nullptr;
 Viewport *InputHandler::viewport = nullptr;
-size_t InputHandler::sliceMod = 0;
+unsigned int InputHandler::sliceMod = 0;
 
 void InputHandler::init(Cube *cube, Viewport *viewport)
 {

@@ -10,7 +10,7 @@ class InputHandler
   static GLFWwindow *glfwWindow;
   static Viewport *viewport;
   static Cube *cube;
-  static size_t sliceMod;
+  static unsigned int sliceMod;
 
 public:
   static void init(Cube *cube, Viewport *viewport);
