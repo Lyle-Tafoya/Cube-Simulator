@@ -1,5 +1,3 @@
-#include <GLFW/glfw3.h>
-#include <GL/glu.h>
 #include "viewport.hpp"
 
 Viewport::Viewport(int width, int height)

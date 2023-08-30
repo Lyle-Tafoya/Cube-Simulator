@@ -1,7 +1,6 @@
 #ifndef INPUT_HANDLER_HPP_
 #define INPUT_HANDLER_HPP_
 
-#include <GLFW/glfw3.h>
 #include "cube.hpp"
 #include "viewport.hpp"
 
