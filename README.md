@@ -1,9 +1,9 @@
-## Cube-Simulator
+# Cube-Simulator
 
 An OpenGL 2.1 NxNxN Cube Twisty Puzzle Simulator
 ![ScreenShot](https://raw.githubusercontent.com/Lyle-Tafoya/Cube-Simulator/master/screenshot.jpg)
 
-#### Controls:
+## Controls:
 
 This application uses keyboard controls and is meant to feel somewhat intuitive to speed cubers who know how to touch type with a QWERTY layout keyboard.
 
@@ -46,6 +46,27 @@ tab Scramble Cube
 l-shift - Move active layer out by 1  
 r-shift - Move active layer in by 1
 
-#### Dependencies:
+## Build Instructions
 
-GLFW 3
+### Linux
+
+    git clone --recursive https://github.com/Lyle-Tafoya/Cube-Simulator.git
+    mkdir Cube-Simulator/build
+    cd Cube-Simulator/build
+    cmake ..
+    make
+
+### Windows (MSYS2)
+
+    git clone --recursive https://github.com/Lyle-Tafoya/Cube-Simulator.git
+    mkdir Cube-Simulator/build
+    cd Cube-Simulator/build
+    cmake .. -G'MSYS Makefiles' -DVCPKG_TARGET_TRIPLET='x64-mingw-dynamic'
+    make
+    
+### Windows (Visual Studio)
+
+    "Clone Repository" -> https://github.com/Lyle-Tafoya/Cube-Simulator.git
+    Double click on Cube Simulator in Solution Explorer
+    "Select Startup Item" -> "CubeSimulator.exe"
+    "Build" -> "CubeSimulator.exe"
