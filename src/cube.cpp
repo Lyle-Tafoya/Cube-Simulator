@@ -223,7 +223,18 @@ void Cube::twist(unsigned int layer, short axis)
   switch(axis)
   {
     case Axis::X:
-      side = ((layer == 0) ? Side::LEFT : ((layer == (cubiesPerEdge - 1)) ? Side::RIGHT : -1));
+      if(layer == 0)
+      {
+        side = Side::LEFT;
+      }
+      else if(layer == cubiesPerEdge-1)
+      {
+        side = Side::RIGHT;
+      }
+      else
+      {
+        side = -1;
+      }
 
       for(unsigned int y = 0; y < cubiesPerEdge; y++)
       {
@@ -238,7 +249,18 @@ void Cube::twist(unsigned int layer, short axis)
       break;
 
     case Axis::Y:
-      side = ((layer == 0) ? Side::TOP : ((layer == (cubiesPerEdge - 1)) ? Side::BOTTOM : -1));
+      if(layer == 0)
+      {
+        side = Side::TOP;
+      }
+      else if(layer == cubiesPerEdge-1)
+      {
+        side = Side::BOTTOM;
+      }
+      else
+      {
+        side = -1;
+      }
 
       for(unsigned int x = 0; x < cubiesPerEdge; x++)
       {
@@ -253,7 +275,18 @@ void Cube::twist(unsigned int layer, short axis)
       break;
 
     case Axis::Z:
-      side = ((layer == 0) ? Side::BACK : ((layer == (cubiesPerEdge - 1)) ? Side::FRONT : -1));
+      if(layer == 0)
+      {
+        side = Side::BACK;
+      }
+      else if(layer == cubiesPerEdge-1)
+      {
+        side = Side::FRONT;
+      }
+      else
+      {
+        side = -1;
+      }
 
       for(unsigned int y = 0; y < cubiesPerEdge; ++y)
       {
@@ -265,6 +298,9 @@ void Cube::twist(unsigned int layer, short axis)
           direction
         );
       }
+      break;
+    default:
+      side = -1;
       break;
   }
 
