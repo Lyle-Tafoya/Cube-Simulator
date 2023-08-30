@@ -19,7 +19,6 @@ public:
   inline GLFWwindow *getWindow() const { return window; }
   void adjustCamera(float xAngle, float yAngle, float zoom);
   void resetCamera();
-  void resizeWindow(int width, int height);
   void setCamera(float xAngle, float yAngle, float zoom);
 
   static void framebufferSizeCallback(GLFWwindow *window, int x, int y);
